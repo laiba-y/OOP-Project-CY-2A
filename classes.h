@@ -46,11 +46,44 @@ class Task {
         // I will use this sequence for when im reading and displaying from the file, pehle bar tak read kar ke task phenk dungi then so on 
         // baki saare status update karna meri zimmedaari hai but you have to come up with the logic of "expired" wala because you're dealing with deadlines
         // to once wo ban jaaye you can make a function of "isexpired" wahan se mai check kar ke expire kar dungi task ko 
+        cout << "Task Assigned!\n" << endl;
+   }
+   void displayTask(string emp_id)
+   {
+        cout << " ------------------- TASKS ----------------------\n";
+        char task[50], user[5], assignee[5], status[15], priority[2], tid[5], trash[70];
+        bool hastask = false;
+        ifstream note;
+        note.open("tasks.txt");
+        while (note.getline(task, 50, '|'))
+        {
+             note.getline(user, 5, '|');
+             if (user == emp_id)
+             {
+                hastask = true;
+                note.getline(assignee, 5, '|');
+                note.getline(priority, 2, '|');
+                note.getline(tid, 5, '|');
+                note.getline(status, 15, '\n');
+                cout << "Task " << tid << " : " << task << endl;
+                cout << "Assigned by : " << assignee << "    Priority: " << priority << "     Status: " << status << endl << endl; 
+             }
+             else
+             {
+             note.getline(trash, 70, '\n');
+             continue;
+             }
+        }
+        note.close();
+        if (!hastask)
+        {
+            cout << "No pending tasks right now " << endl;
+        }
    }
 };
 class PolicyEngine {
   public:
-  bool isAllowed(char sender, char target) // im sending two grades there for you to compare and check the permission from 
+  bool isAllowed(char sender, char target)
   {
     return true; //for my ease, yahan you make the permission logic 
   }
@@ -81,10 +114,19 @@ class Employee {
         if (allowed.isAllowed(grade, target))
         {
             task = new Task; //dynamically allocating space for a new task
-            task->appendtask("emp_id");
+            task->appendtask("M5");
         }
     }
-    void delegate_task();
+    void delegate_task(){}
+    void displayTask()
+    {
+        if (!task)
+        {
+            delete task; //recheck any memory issue here
+        }
+        task = new Task;
+         task->displayTask("J4");
+    }
     void Login();
     string hashpw();
     virtual void showMenu() = 0;
@@ -104,4 +146,3 @@ class Manager : public Employee{
         cout << "\nPRess 1 for assigning tasks, 2 for viewing tasks, 3 for delegating tasks : \n";  // I am making a very rough sa main right now, jab sab hojayega phir I will add decorations and shit
     }
 };
-
