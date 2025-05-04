@@ -36,7 +36,8 @@ class Task {
 
     cout << "Enter task ID: ";
     cin >> TaskID;
-        
+        if (priority == 'L') //making sure the higher priority tasks stay up in the file 
+        {
         fstream note;
         note.open("tasks.txt", ios:: app);
         note << task << "|" << T_ID << "|" << emp_id << "|" << priority <<  "|" << TaskID  << "|" << "Assigned" << endl;
@@ -47,6 +48,58 @@ class Task {
         // baki saare status update karna meri zimmedaari hai but you have to come up with the logic of "expired" wala because you're dealing with deadlines
         // to once wo ban jaaye you can make a function of "isexpired" wahan se mai check kar ke expire kar dungi task ko 
         cout << "Task Assigned!\n" << endl;
+        }
+        else
+        {
+            char tasks[10][50], users[10][5], assignee[10][5], priorities[10], tid[10][5], status[10][15];
+            int i = 0;
+            ifstream note;
+            note.open("tasks.txt", ios::in);
+            while(note.getline(tasks[i], 50, '|'))
+            {
+                note.getline(users[i], 5, '|');
+                note.getline(assignee[i], 5, '|');
+                note >> priorities[i];
+                note.getline(tid[i], 5, '|');
+                note.getline(tid[i], 5, '|');
+                note.getline(status[i], 15, '\n');
+                i++;
+            }
+            note.close();
+            //appending higher priority tasks first 
+            ofstream app;
+            app.open("tasks.txt");
+            if (priority == 'H')
+                {
+                    app << task << "|" << T_ID << "|" << emp_id << "|" << priority <<  "|" << TaskID  << "|" << "Assigned" << endl;
+                }
+            for (int j = 0; j < i; j++)
+            {
+                if (priorities[j] == 'H')
+                {
+                    app << tasks[j] << "|" << users[j] << "|" << assignee[j] << "|" << priorities[j] << "|" << tid[j] << "|" << status[j] << endl;
+                }
+            }
+            //appending medium priority tasks
+            if (priority == 'M')
+                {
+                    app << task << "|" << T_ID << "|" << emp_id << "|" << priority <<  "|" << TaskID  << "|" << "Assigned" << endl;
+                }
+            for (int j = 0; j < i; j++)
+            {
+                if (priorities[j] == 'M')
+                {
+                    app << tasks[j] << "|" << users[j] << "|" << assignee[j] << "|" << priorities[j] << "|" << tid[j] << "|" << status[j] << endl;
+                }
+            }
+            for (int j = 0; j < i; j++)
+            {
+                if (priorities[j] == 'L')
+                {
+                    app << tasks[j] << "|" << users[j] << "|" << assignee[j] << "|" << priorities[j] << "|" << tid[j] << "|" << status[j] << endl;
+                }
+            }
+        }
    }
    void displayTask(string emp_id)
    {
