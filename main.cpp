@@ -2,13 +2,17 @@
 #include "manager.h"
 #include "director.h"
 #include "executive.h"
-
 int main()
 {
     system ("clear");
     int role;
-    cout << "Press 1 for junior, 2 for manager, 3 for director and 4 for executive: "; //add more options into this dont remove these lines as i have to code with the flow with these
+    cout << "Press 1 for junior, 2 for manager, 3 for director 4 for executive and 5 to exit ";
     cin >> role;
+    while (role < 1 or role > 5)
+    {
+        cout << "Invalid option, Try again: ";
+        cin >> role;
+    }
     cin.ignore();
     string ID;
     cout << "Enter Registered ID: ";
@@ -18,8 +22,20 @@ int main()
     {
         juniorfunc(ID);
     }
-    else if (role == 2);
+    else if (role == 2)
     {
         managerfunc(ID);
+    }
+    else if (role == 3)
+    {
+        directorfunc(ID);
+    }
+    else if (role == 4)
+    {
+        executivefunc(ID);
+    }
+    else
+    {
+        cout << "---------------------------- LOGGING OUT ---------------------------------" << endl;
     }
 }
