@@ -3,6 +3,119 @@
 #include <cstring>
 #include <fstream>
 using namespace std;
+
+class Login {
+    string username;
+    string input_pw;
+    string hashed_input_pw;
+    bool success;
+
+public:
+    Login(string user, string pw) : username(user), input_pw(pw), success(false) {
+        hashed_input_pw = hashpw(pw);
+        checkCredentials();
+    }
+
+    bool isSuccess() const { return success; }
+
+private:
+    string hashpw(string pw) {
+    string hash = "";
+    for (int i = 0; i < pw.length(); i++) {
+        char shifted = pw[i] + 3;  // Shift character 3 positions forward
+        hash += shifted;
+    }
+    return hash;
+}
+
+    void checkCredentials() {
+        ifstream fin("users.txt");
+        string user, hash_pw;
+
+        while (fin >> user >> hash_pw) {
+            if (user == username && hash_pw == hashed_input_pw) {
+                success = true;
+                break;
+            }
+        }
+
+        fin.close();
+        Audit::logAction(username, "LOGIN", success ? "SUCCESS" : "FAILURE");
+    }
+};
+
+    //credentials in users.txt
+    Username	Hashed Password	Original Password
+    alice	    sdvv456	         pass123
+    bob	        vxvvg	         sussd
+    admin	    dplq456     	 amin123
+    
+    //users.txt file format
+    //alice sdvv456     //name and hashed pw with a space in between
+    //bob vxvvg
+    //admin dplq456
+
+
+class PolicyEngine {   //abhi i will ad more conditions in it 
+public:
+    // Delegation rule
+    static bool can_delegate(int from_clearance, int to_clearance) {    // is allowed ki jagah i have made seperate functions for msg, delegation etc
+        return from_clearance <= to_clearance;
+    }
+
+    // Messaging rule
+    static bool canSendMessage(int senderClearance, int recipientClearance, string type) {
+        if (type == "PRIVATE")
+            return true; // Anyone can send private messages up
+
+        if (type == "ALERT")
+            return senderClearance >= 3 && recipientClearance >= 3;
+
+        if (type == "INFO")
+            return true;
+
+        if (type == "WARNING" || type == "EMERGENCY")
+            return senderClearance >= 2; // Manager and Executive only
+
+        return false;
+    }
+};
+
+class Time {
+public:
+    static bool checkExpiry(time_t creationTime, int ttlSeconds) {
+        time_t now = time(0);
+        return difftime(now, creationTime) >= ttlSeconds;
+    }
+};
+
+class Audit {
+public:
+    static void logAction(const string& username, const string& action, const string& status) {
+        ofstream fout("audit.txt", ios::app);
+        if (!fout) {
+            cerr << "Error opening audit log file." << endl;
+            return;
+        }
+
+        time_t now = time(0);
+        string timestamp = string(ctime(&now)); // Convert to std::string
+
+        // if i dont do this to aadhi line next line mein ati hai bec ctime(&now) automatically nextline add kardeta hai at the end
+        if (timestamp.length() > 0 && timestamp[timestamp.length() - 1] == '\n') {
+            timestamp = timestamp.substr(0, timestamp.length() - 1);  //this function will remover \n taakay aik pura sentence aye aik line mein 
+        }
+
+        fout << "[" << timestamp << "] " << username << " " << action << " " << status << "\n";
+        fout.close();
+    }
+};
+      //audit.txt foramt
+      //[Tue May 06 00:51:29 2025] ali LOGIN FAILURE
+      //[Tue May 06 00:51:29 2025] ali LOGIN FAILURE
+      //[Tue May 06 00:52:23 2025] ali LOGIN FAILURE
+      //[Tue May 06 00:52:23 2025] ali LOGIN FAILURE
+
 class Global
 {
 private:
@@ -45,9 +158,7 @@ public:
 class Date
 {
 };
-class Time
-{
-};
+
 class Message
 {
 };
@@ -247,17 +358,8 @@ public:
         }
     }
 };
-class PolicyEngine
-{
-public:
-    bool isAllowed(char sender, char target)
-    {
-        return true; // for my ease, yahan you make the permission logic
-    }
-};
-class Audit
-{
-};
+
+
 // class Employee {
 //     protected:
 //     string emp_id;
