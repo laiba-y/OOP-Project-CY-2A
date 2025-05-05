@@ -45,10 +45,10 @@ private:
 };
 
     //credentials in users.txt
-    Username	Hashed Password	Original Password
-    alice	    sdvv456	         pass123
-    bob	        vxvvg	         sussd
-    admin	    dplq456     	 amin123
+   // Username	Hashed Password	Original Password
+   // alice	    sdvv456	         pass123
+   // bob       vxvvg	         sussd
+   // admin	    dplq456     	 amin123
     
     //users.txt file format
     //alice sdvv456     //name and hashed pw with a space in between
