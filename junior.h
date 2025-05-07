@@ -8,6 +8,10 @@ class Junior : public Employee{
     private:
 
     public:
+    Junior(string id)
+    {
+        emp_id = id;
+    }
     void showMenu()
     {
         cout << "------------------------ MENU --------------------------------";
