@@ -171,14 +171,23 @@ public:
         cout << "Message Sent! " << endl;
         app.close();
     }
-    string encrypt()
-    {
-        return "This is encrypted";
+
+     string encrypt(const string& plain) {
+        string cipher = plain;
+        for (size_t i = 0; i < cipher.size(); ++i) {
+            cipher[i] = cipher[i] + 3;
+        }
+        return cipher;
     }
-    string decrypt()
-    {
-        return "This is decrypted";
+
+   string decrypt(const string& cipher) {
+    string plain = cipher;
+    for (size_t i = 0; i < plain.size(); ++i) {
+        plain[i] = plain[i] - 3;
     }
+    return plain;
+}
+
     void receivemsg(string emp_id)
     {
         ifstream in("inbox.txt");
