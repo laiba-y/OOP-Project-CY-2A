@@ -21,7 +21,15 @@ public:
     {
         task = new Task;
         msg = new Message;
-        cout << "Constructor called " << endl;
+       cout << "--------------------------------- GLOBAL MESSAGES FROM HIGHER UPS --------------------------------------\n\n";
+        ifstream notif;
+        notif.open("global.txt");
+        string message;
+        while (getline(notif, message, '\n'))
+        {
+            cout << message << endl;
+        }
+        cout << " ********************************************************************************" << endl << endl;
     }
     bool IDexists(string emp_id)
     {
