@@ -15,13 +15,14 @@ protected:
     Task *task;
     PolicyEngine allowed;
     Audit audit;
+    Tracker report;
 
 public:
     Employee()
     {
         task = new Task;
         msg = new Message;
-       cout << "--------------------------------- GLOBAL MESSAGES FROM HIGHER UPS --------------------------------------\n\n";
+        cout << "--------------------------------- GLOBAL MESSAGES FROM HIGHER UPS --------------------------------------\n\n";
         ifstream notif;
         notif.open("global.txt");
         string message;
@@ -53,17 +54,9 @@ public:
         cout << "---------------- REPORT " << emp_id << " -----------------------" << endl;
         cout << " DEFAULT SCORE : 100" << endl;
         cout << "Marking criteria: \nComplete Task +10 \nFail Task -10\nDelegate Task +5\n";
-        string id;
-        int score;
-        ifstream in;
-        in.open("reports.txt");
-        while (getline(in, id, ' ') && (in >> score))
-        {
-             if (id == emp_id)
-             {
-                cout << "Obtained score : " << score << endl;
-             }
-        }
+        report.setid(emp_id);
+        cout << report ;
+        
     }
     void sendmsg()
     {
