@@ -161,7 +161,8 @@ public:
         return o;
     }
 };
-class Time
+
+class Time_Manager
 {
 public:
     static bool checkExpiry(time_t creationTime, int ttlSeconds)
@@ -191,14 +192,23 @@ public:
         app.close();
         report.addscore(emp_id, 2);
     }
-    string encrypt()
-    {
-        return "This is encrypted";
+   
+        string encrypt(const string& plain) {
+        string cipher = plain;
+        for (size_t i = 0; i < cipher.size(); ++i) {
+            cipher[i] = cipher[i] + 3;
+        }
+        return cipher;
     }
-    string decrypt()
-    {
-        return "This is decrypted";
+    
+  string decrypt(const string& cipher) {
+    string plain = cipher;
+    for (size_t i = 0; i < plain.size(); ++i) {
+        plain[i] = plain[i] - 3;
     }
+    return plain;
+}
+
     void receivemsg(string emp_id)
     {
         ifstream in("inbox.txt");
@@ -221,6 +231,10 @@ public:
 
             if (receiver == emp_id && status == "Unread") // only showing unread messages
             {
+                // Decrypt if the message is PRIVATE
+            if (msgType == "PRIVATE") {
+                message = decrypt(message);
+            }
                 std::cout << "Message:  " << message << "\nSender:   " << sender << "\nType:     " << msgType << "\nStatus:   " << status << "\n"
                           << "-----------------------------\n";
             }
@@ -537,14 +551,11 @@ public:
     }
 };
 
-class Audit
-{
+class Audit {
 public:
-    static void logAction(const string &username, const string &action, const string &status)
-    {
+    static void logAction(const string& username, const string& action, const string& status) {
         ofstream fout("audit.txt", ios::app);
-        if (!fout)
-        {
+        if (!fout) {
             cerr << "Error opening audit log file." << endl;
             return;
         }
@@ -553,53 +564,62 @@ public:
         string timestamp = string(ctime(&now)); // Convert to std::string
 
         // if i dont do this to aadhi line next line mein ati hai bec ctime(&now) automatically nextline add kardeta hai at the end
-        if (timestamp.length() > 0 && timestamp[timestamp.length() - 1] == '\n')
-        {
-            timestamp = timestamp.substr(0, timestamp.length() - 1); // this function will remover \n taakay aik pura sentence aye aik line mein
+        if (timestamp.length() > 0 && timestamp[timestamp.length() - 1] == '\n') {
+            timestamp = timestamp.substr(0, timestamp.length() - 1);  //this function will remover \n taakay aik pura sentence aye aik line mein 
         }
 
         fout << "[" << timestamp << "] " << username << " " << action << " " << status << "\n";
         fout.close();
     }
 };
-class Login
-{
+      //audit.txt foramt
+      //[Tue May 06 00:51:29 2025] ali LOGIN FAILURE
+      //[Tue May 06 00:51:29 2025] ali LOGIN FAILURE
+      //[Tue May 06 00:52:23 2025] ali LOGIN FAILURE
+      //[Tue May 06 00:52:23 2025] ali LOGIN FAILURE
+
+
+class Login {
     string username;
     string input_pw;
     string hashed_input_pw;
     bool success;
 
 public:
-    Login(){}
-    Login(string user, string pw) : username(user), input_pw(pw), success(false)
-    {
+    Login(string user, string pw) : username(user), input_pw(pw), success(false) {
         hashed_input_pw = hashpw(pw);
         checkCredentials();
     }
 
     bool isSuccess() const { return success; }
-
-
-    string hashpw(string pw)
-    {
-        string hash = "";
-        for (int i = 0; i < pw.length(); i++)
-        {
-            char shifted = pw[i] + 3; // Shift character 3 positions forward
-            hash += shifted;
-        }
-        return hash;
+    
+    string generate_otp() {
+    srand(time(0));
+    string otp = "";
+    for (int i = 0; i < 4; i++) {
+        otp += ('0' + rand() % 10); // generates random numbers like 2314
     }
-    private:
-    void checkCredentials()
-    {
+    return otp;
+    }
+private:
+   string hashpw(string pw) {
+    pw += "x7#";  // Append extra characters (salt)
+    string encrypted = "";
+
+    for (int i = 0; i < pw.length(); i++) {
+        encrypted += pw[i] + 2;  // Shift each character by 2
+    }
+
+    return encrypted;
+}
+
+    
+ void checkCredentials() {
         ifstream fin("users.txt");
         string user, hash_pw;
 
-        while (fin >> user >> hash_pw)
-        {
-            if (user == username && hash_pw == hashed_input_pw)
-            {
+        while (fin >> user >> hash_pw) {
+            if (user == username && hash_pw == encrypted) {
                 success = true;
                 break;
             }
@@ -609,3 +629,57 @@ public:
         Audit::logAction(username, "LOGIN", success ? "SUCCESS" : "FAILURE");
     }
 };
+
+
+class Anomaly {
+public:
+    static void detect() {
+        ifstream fin("audit.txt");
+        if (!fin) {
+            cout << "Could not open audit.txt.\n";
+            return;
+        }
+
+        string line;
+        int loginFailures = 0;
+        int permissionDenials = 0;
+
+        while (getline(fin, line)) {
+            // Checks if line contains "LOGIN FAILURE"
+            if (contains(line, "LOGIN FAILURE"))
+                loginFailures++;
+
+            // Checks if line contains "DENIED"
+            if (contains(line, "DENIED"))
+                permissionDenials++;
+        }
+
+        fin.close();
+
+        cout << "\n===== ANOMALY REPORT =====\n";
+        if (loginFailures > 3)
+            cout << "??  More than 3 failed logins detected.\n";
+        if (permissionDenials > 2)
+            cout << "??  More than 2 permission denials detected.\n";
+        if (loginFailures <= 3 && permissionDenials <= 2)
+            cout << "No suspicious activity found.\n";
+    }
+
+    // function to check if a string contains a substring
+    static bool contains(string line, string word) {
+        int lenText = line.length();
+        int lenKey = word.length();
+
+        for (int i = 0; i <= lenText - lenKey; i++) {  //to prevent incorrect comparison
+            bool match = true;
+            for (int j = 0; j < lenKey; j++) {
+                if (text[i + j] != keyword[j]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) return true;
+        }
+        return false;
+    }
+};  
