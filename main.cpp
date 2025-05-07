@@ -4,6 +4,12 @@
 #include "executive.h"
 int main()
 {
+
+//J6: password1
+//M2: password2
+//D1: nopw123
+//E1: pw123
+    
     system ("clear");
     // 1) Prompt for credentials
   
