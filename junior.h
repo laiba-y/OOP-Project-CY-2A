@@ -8,9 +8,9 @@ class Junior : public Employee{
     private:
 
     public:
-    Junior(string id)
-    {
+    Junior(string id){
         emp_id = id;
+        grade = 1;
     }
     void showMenu()
     {
