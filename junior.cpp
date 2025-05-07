@@ -4,7 +4,7 @@
 void juniorfunc(string ID) {
     Junior J(ID);
     bool running = true;
-
+    
     while (running) {
         J.showMenu();
         int facility;
@@ -33,7 +33,7 @@ void juniorfunc(string ID) {
         }
         else if (facility == 5)
         {
-            //show performance report here
+            J.showperformance(ID);
         }
         else 
         {
