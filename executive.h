@@ -11,13 +11,15 @@ class HigherUp : public Employee{
     public: 
     void showMenu()
     {
-        cout << "Press blah blah" << endl;   
+        cout << "Press 1 for assigning task, 2 for viewing task, 3 for delegating task, 4 for sending messages, 5 for recieving messages ";
+       cout << "6 to Send global messages, 7 for performance reports , 8 to exit " << endl;
     }
     void sendGlobalMsg()
     {
         int msgtype;
         cout << "Press \n1 to Send Alert, 2 to Send Emergency Message, 3 to Send Warning, 4 to Exit: ";
         cin >> msgtype;
+        cin.ignore();
         while (msgtype < 1 or msgtype > 4)
         {
             cout << "Invalid option, Try again: ";
@@ -43,9 +45,13 @@ class HigherUp : public Employee{
 };
 class Executive: public HigherUp{
     public:
+    Executive(string id)
+    {
+        emp_id = id;
+        grade = 4;
+    }
     void showmenu()
     {
-        cout << "Press blah blah" << endl;   
     }
 };
 void executivefunc(string ID);
