@@ -629,13 +629,15 @@ public:
     return otp;
     }
 private:
-    string hashpw(string pw) {
-    string hash = "";
+   string hashpw(string pw) {
+    pw += "x7#";  // Append extra characters (salt)
+    string encrypted = "";
+
     for (int i = 0; i < pw.length(); i++) {
-        char shifted = pw[i] + 3;  // Shift character 3 positions forward
-        hash += shifted;
+        encrypted += pw[i] + 2;  // Shift each character by 2
     }
-    return hash;
+
+    return encrypted;
 }
     
 
