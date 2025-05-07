@@ -2,7 +2,8 @@
 #include <iostream>
 #include <cstring>
 #include <fstream>
-
+#include <sstream>
+#include "employee.h"
 using namespace std;
 
 class Global
@@ -19,7 +20,7 @@ public:
         getline(cin, alert);
         fstream o;
         o.open("global.txt", ios::app);
-        o << "ALERT FROM HIGHER-UPS : " << alert << endl;
+        o << "ALERT : " << alert << endl;
         o.close();
         cout << "Alert added!" << endl;
     }
@@ -29,7 +30,7 @@ public:
         getline(cin, emergency);
         fstream o;
         o.open("global.txt", ios::app);
-        o << "EMERGENCY FROM HIGHER-UPS : " << emergency << endl;
+        o << "EMERGENCY : " << emergency << endl;
         o.close();
         cout << "Emergency declared!" << endl;
     }
@@ -39,7 +40,7 @@ public:
         getline(cin, warning);
         fstream o;
         o.open("global.txt", ios::app);
-        o << "WARNING FROM HIGHER-UPS : " << alert << endl;
+        o << "WARNING : " << alert << endl;
         o.close();
         cout << "Warning announced!" << endl;
     }
@@ -145,10 +146,11 @@ public:
 class Date
 {
 };
-
-class Time_Manager {
+class Time
+{
 public:
-    static bool checkExpiry(time_t creationTime, int ttlSeconds) {
+    static bool checkExpiry(time_t creationTime, int ttlSeconds)
+    {
         time_t now = time(0);
         return difftime(now, creationTime) >= ttlSeconds;
     }
@@ -171,23 +173,14 @@ public:
         cout << "Message Sent! " << endl;
         app.close();
     }
-
-     string encrypt(const string& plain) {
-        string cipher = plain;
-        for (size_t i = 0; i < cipher.size(); ++i) {
-            cipher[i] = cipher[i] + 3;
-        }
-        return cipher;
+    string encrypt()
+    {
+        return "This is encrypted";
     }
-
-   string decrypt(const string& cipher) {
-    string plain = cipher;
-    for (size_t i = 0; i < plain.size(); ++i) {
-        plain[i] = plain[i] - 3;
+    string decrypt()
+    {
+        return "This is decrypted";
     }
-    return plain;
-}
-
     void receivemsg(string emp_id)
     {
         ifstream in("inbox.txt");
@@ -210,8 +203,6 @@ public:
 
             if (receiver == emp_id && status == "Unread") // only showing unread messages
             {
-                  if (msgType == "PRIVATE")
-                    message = decrypt(message);
                 std::cout << "Message:  " << message << "\nSender:   " << sender << "\nType:     " << msgType << "\nStatus:   " << status << "\n"
                           << "-----------------------------\n";
             }
@@ -554,99 +545,44 @@ public:
         fout.close();
     }
 };
-class Anomaly {
-public:
-    static void detect() {
-        ifstream fin("audit.txt");
-        if (!fin) {
-            cout << "Could not open audit.txt.\n";
-            return;
-        }
-
-        string line;
-        int loginFailures = 0;
-        int permissionDenials = 0;
-
-        while (getline(fin, line)) {
-            // Checks if line contains "LOGIN FAILURE"
-            if (contains(line, "LOGIN FAILURE"))
-                loginFailures++;
-
-            // Checks if line contains "DENIED"
-            if (contains(line, "DENIED"))
-                permissionDenials++;
-        }
-
-        fin.close();
-
-        cout << "\n===== ANOMALY REPORT =====\n";
-        if (loginFailures > 3)
-            cout << "??  More than 3 failed logins detected.\n";
-        if (permissionDenials > 2)
-            cout << "??  More than 2 permission denials detected.\n";
-        if (loginFailures <= 3 && permissionDenials <= 2)
-            cout << "No suspicious activity found.\n";
-    }
-
-    // function to check if a string contains a substring
-    static bool contains(string line, string word) {
-        int lenText = line.length();
-        int lenKey = word.length();
-
-        for (int i = 0; i <= lenText - lenKey; i++) {  //to prevent incorrect comparison
-            bool match = true;
-            for (int j = 0; j < lenKey; j++) {
-                if (line[i + j] != word[j]) {
-                    match = false;
-                    break;
-                }
-            }
-            if (match) return true;
-        }
-        return false;
-    }
-};
-
-class Login {
+class Login
+{
     string username;
     string input_pw;
     string hashed_input_pw;
     bool success;
 
 public:
-    Login(string user, string pw) : username(user), input_pw(pw), success(false) {
+    Login(){}
+    Login(string user, string pw) : username(user), input_pw(pw), success(false)
+    {
         hashed_input_pw = hashpw(pw);
         checkCredentials();
     }
 
     bool isSuccess() const { return success; }
-     string generate_otp() {
-    srand(time(0));
-    string otp = "";
-    for (int i = 0; i < 4; i++) {
-        otp += ('0' + rand() % 10); // generates random numbers like 2314
-    }
-    return otp;
-    }
-private:
-   string hashpw(string pw) {
-    pw += "x7#";  // Append extra characters (salt)
-    string encrypted = "";
 
-    for (int i = 0; i < pw.length(); i++) {
-        encrypted += pw[i] + 2;  // Shift each character by 2
+
+    string hashpw(string pw)
+    {
+        string hash = "";
+        for (int i = 0; i < pw.length(); i++)
+        {
+            char shifted = pw[i] + 3; // Shift character 3 positions forward
+            hash += shifted;
+        }
+        return hash;
     }
-
-    return encrypted;
-}
-    
-
-    void checkCredentials() {
+    private:
+    void checkCredentials()
+    {
         ifstream fin("users.txt");
         string user, hash_pw;
 
-        while (fin >> user >> hash_pw) {
-            if (user == username && hash_pw == hashed_input_pw) {
+        while (fin >> user >> hash_pw)
+        {
+            if (user == username && hash_pw == hashed_input_pw)
+            {
                 success = true;
                 break;
             }
