@@ -8,11 +8,34 @@ using namespace std;
 class HigherUp : public Employee{
     private:
     Global global;
+    Login log;
     public: 
+    HigherUp()
+    {
+
+    }
+    void adduser()
+    {
+        string ID, pw;
+        cout << "Enter ID for the User: ";
+        getline(cin, ID);
+        if (IDexists(ID))
+        {
+            cout << "ID already exists! Choose another ID: ";
+            getline(cin, ID);
+        }
+        cout << "Choose password for the user: ";
+        getline(cin, pw);
+        pw = log.hashpw(pw);
+        fstream add;
+        add.open("users.txt", ios::app);
+        add << ID << " " << pw << endl;
+        add.close();
+    }
     void showMenu()
     {
         cout << "Press 1 for assigning task, 2 for viewing task, 3 for delegating task, 4 for sending messages, 5 for recieving messages ";
-       cout << "6 to Send global messages, 7 for performance reports , 8 to exit " << endl;
+       cout << "6 to Send global messages, 7 for performance reports , 8 to Hire a user, 9 to Exit " << endl;
     }
     void sendGlobalMsg()
     {
@@ -52,6 +75,7 @@ class Executive: public HigherUp{
     }
     void showmenu()
     {
+        cout << "Press blah blah" << endl;   
     }
 };
 void executivefunc(string ID);
