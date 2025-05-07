@@ -8,9 +8,20 @@ class Manager : public Employee{
     private:
 
     public:
-    Manager(string id) {
+    Manager(string id)
+    {
         emp_id = id;
-    } 
+        grade = 2;
+        cout << "--------------------------------- GLOBAL MESSAGES FROM HIGHER UPS --------------------------------------\n\n";
+        ifstream notif;
+        notif.open("global.txt");
+        string message;
+        while (getline(notif, message, '\n'))
+        {
+            cout << message << endl;
+        }
+        cout << " ********************************************************************************" << endl << endl;
+    }
     void showMenu()
     {
         cout << "------------------------ MENU --------------------------------";
