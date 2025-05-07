@@ -50,11 +50,11 @@ class Tracker
 {
 private:
     int score;
-
+    string id;
 public:
     Tracker() : score(100) {}
 
-    void addscore(string findID)
+    void addscore(string findID, int add = 10)
     {
         string ID[10];
         int ach[10];
@@ -79,8 +79,8 @@ public:
             if (ID[j] == findID)
             {
                 found = true;
-                score = ach[j] + 10;
-                ach[j] += 10; // Add the achievement score
+                score = ach[j] + add;
+                ach[j] += add; // Add the achievement score
                 cout << "Score updated. New score: " << score << endl;
                 break;
             }
@@ -137,14 +137,29 @@ public:
 
         cout << "ID not found. Score unchanged." << endl;
     }
-
+    void setid(string emp_id)
+    {
+          id = emp_id;
+    }
     int getScore() const
     {
         return score;
     }
-};
-class Date
-{
+    friend ostream& operator << (ostream& o, const Tracker& report)
+    {
+        string checkID;
+        int score;
+        ifstream in;
+        in.open("reports.txt");
+        while (getline(in, checkID, ' ') && (in >> score))
+        {
+             if (checkID== report.id)
+             {
+                cout << "Obtained score : " << score << endl;
+             }
+        }
+        return o;
+    }
 };
 class Time
 {
@@ -157,6 +172,8 @@ public:
 };
 class Message
 {
+    private:
+    Tracker report;
 public:
     void sendmsg(string emp_id, string T_id, string msgtype)
     {
@@ -172,6 +189,7 @@ public:
         app << msg << "|" << T_id << "|" << emp_id << "|" << msgtype << "|" << "Unread" << endl;
         cout << "Message Sent! " << endl;
         app.close();
+        report.addscore(emp_id, 2);
     }
     string encrypt()
     {
@@ -479,7 +497,7 @@ public:
                 app << tasks[k] << "|" << users[k] << "|" << assignee[k] << "|" << priorities[k] << "|" << tid[k] << "|" << status[k] << endl;
             }
             cout << "Task Delegated!" << endl;
-            report.addscore(emp_id);
+            report.addscore(emp_id, 5);
         }
         else
         {
