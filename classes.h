@@ -210,6 +210,8 @@ public:
 
             if (receiver == emp_id && status == "Unread") // only showing unread messages
             {
+                  if (msgType == "PRIVATE")
+                    message = decrypt(message);
                 std::cout << "Message:  " << message << "\nSender:   " << sender << "\nType:     " << msgType << "\nStatus:   " << status << "\n"
                           << "-----------------------------\n";
             }
