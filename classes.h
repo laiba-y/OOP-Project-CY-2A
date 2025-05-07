@@ -619,7 +619,7 @@ private:
         string user, hash_pw;
 
         while (fin >> user >> hash_pw) {
-            if (user == username && hash_pw == encrypted) {
+            if (user == username && hash_pw == hashed_input_pw) {
                 success = true;
                 break;
             }
