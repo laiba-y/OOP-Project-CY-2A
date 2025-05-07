@@ -3,7 +3,7 @@
 #include "employee.h"
 void managerfunc(string ID)
 {
-    Manager M;
+    Manager M(ID);
     M.showMenu(); //showing menu
     int facility;
     cin >> facility;
