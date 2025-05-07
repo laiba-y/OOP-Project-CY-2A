@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstring>
 #include <fstream>
+
 using namespace std;
 
 class Global
@@ -170,10 +171,15 @@ class Message
         cout << "Message Sent! " << endl;
         app.close();
     }
-    string encrypt()
-    {
-           return "This is a private message";
+
+    string encrypt(const string& plain_text) {
+        string cipher = plain_text;
+        for (size_t i = 0; i < cipher.size(); ++i) {
+            cipher[i] = cipher[i] + 3;
+        }
+        return cipher;
     }
+    
 };
 class Task
 {
