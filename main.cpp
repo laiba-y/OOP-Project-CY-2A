@@ -5,6 +5,9 @@
 int main()
 {
     system ("clear");
+    // 1) Prompt for credentials
+  
+
     int role;
     cout << "Press 1 for junior, 2 for manager, 3 for director 4 for executive and 5 to exit ";
     cin >> role;
@@ -13,11 +16,39 @@ int main()
         cout << "Invalid option, Try again: ";
         cin >> role;
     }
-    cin.ignore();
-    string ID;
-    cout << "Enter Registered ID: ";
-    getline(cin, ID);
-    // yahan par you add your login security checks and password stuff
+      string username, password;
+    cout << "Username: ";
+    getline(cin, username);
+    cout << "Password: ";
+    getline(cin, password);
+
+    // 2) Check user/pass
+    Login user(username, password);
+    if (!user.isSuccess()) {
+        cout << "Login failed. Exiting.\n";
+        return 0;
+    }
+
+    // 3) Generate OTP & record gen time
+    const int otp_ttl = 60;  // OTP valid for 1 minute
+    string otp = user.generate_otp();
+    time_t otp_gen_time = time(0);
+
+    cout << "Your one‑time code is: " << otp << "\n";
+    cout << "Enter OTP: ";
+    string input_otp;
+    cin >> input_otp;
+
+    // 4) Verify OTP and TTL
+    bool expired = Time_Manager::checkExpiry(otp_gen_time, otp_ttl);
+    if (input_otp == otp && !expired) {
+        cout << "OTP Verified. Login fully successful.\n";
+    } else {
+        cout << "Incorrect or expired OTP. Access denied.\n";
+        Audit::logAction(username, "OTP_VERIFY", "FAILURE");
+        return 0;
+    }
+    
     if (role == 1)
     {
         juniorfunc(ID);
@@ -41,25 +72,64 @@ int main()
 
      cout << "\n====================\nCLASS TEST CASES BEGIN\n====================\n";
 
-    // Login Tests
-    Login validUser("alice", "pass123");
-    cout << "Test: Valid Login (alice/pass123): " << (validUser.isSuccess() ? "PASSED" : "FAILED") << endl;
+    // ---- LOGIN TESTS ----
+    cout << "===== LOGIN TESTS =====" << endl;
 
-    Login invalidUser("alice", "wrongpass");
-    cout << "Test: Invalid Login (alice/wrongpass): " << (invalidUser.isSuccess() ? "FAILED" : "PASSED") << endl;
+    // Try valid login
+    Login user1("ali", "abc123");  // Should succeed
+    cout << "Login for ali: " << (user1.isSuccess() ? "Success" : "Failure") << endl;
 
-    // PolicyEngine Tests
-    cout << "Test: Can Junior delegate to Manager: " 
-         << (PolicyEngine::can_delegate(1, 2) ? "PASSED" : "FAILED") << endl;
+    if (user1.isSuccess()) {
+    string otp = user1.generate_otp();  
+    time_t otp_gen= time(0);
+    cout << "Your OTP is: " << otp << endl;
 
-    cout << "Test: Manager sending WARNING to Junior: "
-         << (PolicyEngine::canSendMessage(2, 1, "WARNING") ? "PASSED" : "FAILED") << endl;
+    string input;
+    cout << "Enter OTP: ";
+    cin >> input;
+    time_t otp_now= time(0);
+    if (input == otp, Time_Manager::checkExpiry(otp_gen, otp_now) ) {
+        cout << "OTP Verified. Login Fully Successful.\n";
+    } else {
+        cout << "Incorrect OTP. Access Denied.\n";
+        Audit::logAction("ali", "OTP_VERIFY", "FAILURE");
+        return 0; // exit program
+    }
+   }
+  
+    // Try invalid login
+    Login user2("ali", "wrongpass");  // Should fail
+    cout << "Login for ali with wrong pass: " << (user2.isSuccess() ? "Success" : "Failure") << endl;
 
-    cout << "Test: Junior sending ALERT to Director: "
-         << (!PolicyEngine::canSendMessage(1, 3, "ALERT") ? "PASSED" : "FAILED") << endl;
+    // ---- DELEGATION TESTS ----
+    cout << "\n===== POLICY TESTS =====" << endl;
 
-    // Time Expiry Tests
-    time_t past = time(0) - 3600; // 1 hour ago
-    cout << "Test: TTL Expired for 30min TTL: "
-         << (Time::checkExpiry(past, 1800) ? "PASSED" : "FAILED") << endl;
+    int junior = 1, manager = 2, director = 3, executive = 4;
+
+    // Delegation: Junior to Manager (Allowed)
+    cout << "Delegation J->M: " << (PolicyEngine::can_delegate(junior, manager) ? "Allowed" : "Denied") << endl;
+
+    // Delegation: Manager to Junior (Not allowed)
+    cout << "Delegation M->J: " << (PolicyEngine::can_delegate(manager, junior) ? "Allowed" : "Denied") << endl;
+
+    // Message: Junior sends PRIVATE to Manager
+    cout << "PRIVATE J->M: " << (PolicyEngine::canSendMessage(junior, manager, "PRIVATE") ? "Allowed" : "Denied") << endl;
+
+    // Message: Junior sends ALERT to Director
+    cout << "ALERT J->D: " << (PolicyEngine::canSendMessage(junior, director, "ALERT") ? "Allowed" : "Denied") << endl;
+
+    // Message: Director sends ALERT to Director
+    cout << "ALERT D->D: " << (PolicyEngine::canSendMessage(director, director, "ALERT") ? "Allowed" : "Denied") << endl;
+
+    // Message: Manager sends WARNING
+    cout << "WARNING M->anyone: " << (PolicyEngine::canSendMessage(manager, junior, "WARNING") ? "Allowed" : "Denied") << endl;
+
+    // ---- TIME EXPIRY TEST ----
+    cout << "\n===== TIME TEST =====" << endl;
+
+    time_t taskCreated = time(0) - 3600;  // Task created 1 hour ago
+    int ttl = 1800; // TTL = 30 minutes
+
+    cout << "Task expired? " << (Time_Manager::checkExpiry(taskCreated, ttl) ? "Yes" : "No") << endl;
+    Anomaly::detect();
 }
