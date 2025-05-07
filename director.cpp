@@ -10,7 +10,7 @@ void directorfunc(string ID)
     D.showMenu(); //showing menu
     int facility;
     cin >> facility;
-    while (facility < 1 or facility > 8) //change numbers according to increase in facilities
+    while (facility < 1 or facility > 9) //change numbers according to increase in facilities
     {
         cout << "Option not available, try again: ";
         cin >> facility;
@@ -48,10 +48,14 @@ void directorfunc(string ID)
         getline(cin, id);
         D.showperformance(id);
     }
-    else if (facility == 8)
+    else if (facility == 9)
     {
         cout << "------------------ LOGGING OUT ---------------------------";
         return;
+    }
+    else
+    {
+        D.adduser();
     }
     int option;
     cout << "Press 3 to Continue, 4 to Exit: ";
