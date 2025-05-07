@@ -4,6 +4,9 @@
 void managerfunc(string ID)
 {
     Manager M(ID);
+    bool running = true;
+    while (running)
+    {
     M.showMenu(); //showing menu
     int facility;
     cin >> facility;
@@ -34,7 +37,7 @@ void managerfunc(string ID)
     }
     else if (facility == 6)
     {
-        //performance reports here
+        M.showperformance(ID);
     }
     else
     {
@@ -42,20 +45,17 @@ void managerfunc(string ID)
         return;
     }
     int option;
-    cout << "Press 3 to Continue, 4 to Exit : ";
-    cin >> option;
-
-    while (option < 3 or option > 4)
-    {
-        cout << "Invalid option, Try again: ";
+        cout << "Press 3 to Continue, 4 to Exit: ";
         cin >> option;
-    }
-    if (option == 3)
-    {
-        managerfunc(ID);
-    }
-    else {
-        cout << "----------------------------- LOGGING OUT ----------------------------" << endl;
-        return;
-    }
+
+        while (option < 3 || option > 4) {
+            cout << "Invalid option, Try again: ";
+            cin >> option;
+        }
+
+        if (option == 4) {
+            cout << "----------------------------- LOGGING OUT ----------------------------" << endl;
+            running = false;
+        }
+}
 }
