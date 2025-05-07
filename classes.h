@@ -155,7 +155,7 @@ public:
 };
 class Message
 {
-    public:
+public:
     void sendmsg(string emp_id, string T_id, string msgtype)
     {
         string msg;
@@ -163,23 +163,51 @@ class Message
         cin.ignore();
         getline(cin, msg);
         if (msgtype == "PRIVATE")
-        msg = encrypt();
+            msg = encrypt();
 
         fstream app;
         app.open("inbox.txt", ios::app);
-        app << msg << "|" << T_id << "|" << emp_id << "|" << msgtype << endl;
+        app << msg << "|" << T_id << "|" << emp_id << "|" << msgtype << "|" << "Unread" << endl;
         cout << "Message Sent! " << endl;
         app.close();
     }
-
-    string encrypt(const string& plain_text) {
-        string cipher = plain_text;
-        for (size_t i = 0; i < cipher.size(); ++i) {
-            cipher[i] = cipher[i] + 3;
-        }
-        return cipher;
+    string encrypt()
+    {
+        return "This is encrypted";
     }
-    
+    string decrypt()
+    {
+        return "This is decrypted";
+    }
+    void receivemsg(string emp_id)
+    {
+        ifstream in("inbox.txt");
+        if (!in)
+        {
+            std::cerr << "Cannot open file.\n";
+            return;
+        }
+
+        std::string line;
+        while (std::getline(in, line))
+        {
+            std::stringstream ss(line);
+            std::string message, receiver, sender, msgType, status;
+            std::getline(ss, message, '|');
+            std::getline(ss, receiver, '|');
+            std::getline(ss, sender, '|');
+            std::getline(ss, msgType, '|');
+            std::getline(ss, status, '|');
+
+            if (receiver == emp_id && status == "Unread") // only showing unread messages
+            {
+                std::cout << "Message:  " << message << "\nSender:   " << sender << "\nType:     " << msgType << "\nStatus:   " << status << "\n"
+                          << "-----------------------------\n";
+            }
+        }
+
+        in.close();
+    }
 };
 class Task
 {
@@ -193,64 +221,65 @@ class Task
     Tracker report;
 
 public:
-#include <iostream>
-#include <fstream>
-#include <cstring>
+    void updatestatus(const char *taskComp, const char *newstatus)
+    {
+        char tasks[10][50];
+        char users[10][5];
+        char assignee[10][5];
+        char priorities[10];
+        char tid[10][5];
+        char status[10][15];
+        int i = 0;
 
-void updatestatus(const char* taskComp, const char* newstatus)
-{
-    char tasks[10][50];
-    char users[10][5];
-    char assignee[10][5];
-    char priorities[10];
-    char tid[10][5];
-    char status[10][15];
-    int i = 0;
-
-    std::ifstream note("tasks.txt", std::ios::in);
-    if (!note.is_open()) {
-        std::cerr << "Cannot open tasks.txt for reading\n";
-        return;
-    }
-
-    // Read each record
-    while (i < 10 && note.getline(tasks[i], 50, '|')) {
-        note.getline(users[i], 5,   '|');
-        note.getline(assignee[i],5, '|');
-
-        // read single-char priority + delimiter
-        note.get(priorities[i]);
-        note.get();  // consume the '|' after priority
-
-        note.getline(tid[i],    5,   '|');
-        note.getline(status[i], 15,  '\n');
-        ++i;
-    }
-    note.close();
-
-    std::ofstream app("tasks.txt", std::ios::trunc);
-    if (!app.is_open()) {
-        std::cerr << "Cannot open tasks.txt for writing\n";
-        return;
-    }
-
-    // Update matching task and rewrite file
-    for (int j = 0; j < i; ++j) {
-        if (std::strcmp(tid[j], taskComp) == 0) {
-            // safely copy newstatus into status[j]
-            std::strncpy(status[j], newstatus, sizeof(status[j]) - 1);
-            status[j][sizeof(status[j]) - 1] = '\0';
+        std::ifstream note("tasks.txt", std::ios::in);
+        if (!note.is_open())
+        {
+            std::cerr << "Cannot open tasks.txt for reading\n";
+            return;
         }
-        app
-          << tasks[j]    << '|'
-          << users[j]    << '|'
-          << assignee[j] << '|'
-          << priorities[j] << '|'
-          << tid[j]      << '|'
-          << status[j]   << '\n';
+
+        // Read each record
+        while (i < 10 && note.getline(tasks[i], 50, '|'))
+        {
+            note.getline(users[i], 5, '|');
+            note.getline(assignee[i], 5, '|');
+
+            // read single-char priority + delimiter
+            note.get(priorities[i]);
+            note.get(); // consume the '|' after priority
+
+            note.getline(tid[i], 5, '|');
+            note.getline(status[i], 15, '\n');
+            ++i;
+        }
+        note.close();
+
+        std::ofstream app("tasks.txt", std::ios::trunc);
+        if (!app.is_open())
+        {
+            std::cerr << "Cannot open tasks.txt for writing\n";
+            return;
+        }
+
+        // Update matching task and rewrite file
+        for (int j = 0; j < i; ++j)
+        {
+            if (std::strcmp(tid[j], taskComp) == 0)
+            {
+                // safely copy newstatus into status[j]
+                std::strncpy(status[j], newstatus, sizeof(status[j]) - 1);
+                status[j][sizeof(status[j]) - 1] = '\0';
+            }
+            app
+                << tasks[j] << '|'
+                << users[j] << '|'
+                << assignee[j] << '|'
+                << priorities[j] << '|'
+                << tid[j] << '|'
+                << status[j] << '\n';
+        }
+        app.close();
     }
-    app.close();
-}
 
     void DoTask(string emp_id)
     {
@@ -281,12 +310,10 @@ void updatestatus(const char* taskComp, const char* newstatus)
             }
         }
     }
-    void appendtask(string emp_id) // jo user task assign kar raha hai uski ID in parameter so I can note it in the file
+    void appendtask(string emp_id, string T_ID) // jo user task assign kar raha hai uski ID in parameter so I can note it in the file
     {
         cin.ignore();
-        cout << "Access permitted!\nEnter the Receiver's ID: ";
-        cin.ignore();
-        std::getline(cin, T_ID); // I will check yahan par ke given ID exist karti hai ya nahi by going through users.txt, first I will notice how you write in that file uske hisaab se ill make a logic for the file handling
+        // I will check yahan par ke given ID exist karti hai ya nahi by going through users.txt, first I will notice how you write in that file uske hisaab se ill make a logic for the file handling
 
         cout << "Type the Task: ";
         std::getline(cin, task); // taking the task
@@ -365,7 +392,7 @@ void updatestatus(const char* taskComp, const char* newstatus)
     bool displayTask(string emp_id, string type = "assign")
     {
         if (type == "assign")
-        cout << " ------------------- TASKS ----------------------\n";
+            cout << " ------------------- TASKS ----------------------\n";
         char task[50], user[5], assignee[5], status[15], priority[2], tid[5], trash[70];
         bool hastask = false;
         ifstream note;
@@ -409,9 +436,10 @@ void updatestatus(const char* taskComp, const char* newstatus)
         cout << "Enter the ID of Role you want to delegate the task FROM : ";
         cin.ignore();
         cin.getline(takeID, 5, '\n');
+       
         cout << "Enter the ID of Role you want to delegate task TO : ";
         cin.getline(giveID, 5, '\n');
-
+          
         cout << "-------------- CHOOSE THE TASK ID TO BE DELEGATED TO OTHER USER -------------\n";
         if (displayTask(takeID, "display"))
         {
@@ -463,7 +491,7 @@ class PolicyEngine
 public:
     static bool can_assign(int from_clearance, int to_clearance)
     {
-        return true;
+        return from_clearance >= to_clearance;
     }
     // Delegation rule
     static bool can_delegate(int from_clearance, int to_clearance)
