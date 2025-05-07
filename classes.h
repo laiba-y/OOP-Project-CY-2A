@@ -144,11 +144,10 @@ public:
 class Date
 {
 };
-class Time
-{
+
+class Time_Manager {
 public:
-    static bool checkExpiry(time_t creationTime, int ttlSeconds)
-    {
+    static bool checkExpiry(time_t creationTime, int ttlSeconds) {
         time_t now = time(0);
         return difftime(now, creationTime) >= ttlSeconds;
     }
@@ -510,43 +509,97 @@ public:
         fout.close();
     }
 };
-class Login
-{
+class Anomaly {
+public:
+    static void detect() {
+        ifstream fin("audit.txt");
+        if (!fin) {
+            cout << "Could not open audit.txt.\n";
+            return;
+        }
+
+        string line;
+        int loginFailures = 0;
+        int permissionDenials = 0;
+
+        while (getline(fin, line)) {
+            // Checks if line contains "LOGIN FAILURE"
+            if (contains(line, "LOGIN FAILURE"))
+                loginFailures++;
+
+            // Checks if line contains "DENIED"
+            if (contains(line, "DENIED"))
+                permissionDenials++;
+        }
+
+        fin.close();
+
+        cout << "\n===== ANOMALY REPORT =====\n";
+        if (loginFailures > 3)
+            cout << "??  More than 3 failed logins detected.\n";
+        if (permissionDenials > 2)
+            cout << "??  More than 2 permission denials detected.\n";
+        if (loginFailures <= 3 && permissionDenials <= 2)
+            cout << "No suspicious activity found.\n";
+    }
+
+    // function to check if a string contains a substring
+    static bool contains(string line, string word) {
+        int lenText = line.length();
+        int lenKey = word.length();
+
+        for (int i = 0; i <= lenText - lenKey; i++) {  //to prevent incorrect comparison
+            bool match = true;
+            for (int j = 0; j < lenKey; j++) {
+                if (line[i + j] != word[j]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) return true;
+        }
+        return false;
+    }
+};
+
+class Login {
     string username;
     string input_pw;
     string hashed_input_pw;
     bool success;
 
 public:
-    Login(string user, string pw) : username(user), input_pw(pw), success(false)
-    {
+    Login(string user, string pw) : username(user), input_pw(pw), success(false) {
         hashed_input_pw = hashpw(pw);
         checkCredentials();
     }
 
     bool isSuccess() const { return success; }
-
-private:
-    string hashpw(string pw)
-    {
-        string hash = "";
-        for (int i = 0; i < pw.length(); i++)
-        {
-            char shifted = pw[i] + 3; // Shift character 3 positions forward
-            hash += shifted;
-        }
-        return hash;
+     string generate_otp() {
+    srand(time(0));
+    string otp = "";
+    for (int i = 0; i < 4; i++) {
+        otp += ('0' + rand() % 10); // generates random numbers like 2314
     }
+    return otp;
+    }
+private:
+    string hashpw(string pw) {
+    string hash = "";
+    for (int i = 0; i < pw.length(); i++) {
+        char shifted = pw[i] + 3;  // Shift character 3 positions forward
+        hash += shifted;
+    }
+    return hash;
+}
+    
 
-    void checkCredentials()
-    {
+    void checkCredentials() {
         ifstream fin("users.txt");
         string user, hash_pw;
 
-        while (fin >> user >> hash_pw)
-        {
-            if (user == username && hash_pw == hashed_input_pw)
-            {
+        while (fin >> user >> hash_pw) {
+            if (user == username && hash_pw == hashed_input_pw) {
                 success = true;
                 break;
             }
