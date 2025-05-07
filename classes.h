@@ -4,118 +4,6 @@
 #include <fstream>
 using namespace std;
 
-class Login {
-    string username;
-    string input_pw;
-    string hashed_input_pw;
-    bool success;
-
-public:
-    Login(string user, string pw) : username(user), input_pw(pw), success(false) {
-        hashed_input_pw = hashpw(pw);
-        checkCredentials();
-    }
-
-    bool isSuccess() const { return success; }
-
-private:
-    string hashpw(string pw) {
-    string hash = "";
-    for (int i = 0; i < pw.length(); i++) {
-        char shifted = pw[i] + 3;  // Shift character 3 positions forward
-        hash += shifted;
-    }
-    return hash;
-}
-
-    void checkCredentials() {
-        ifstream fin("users.txt");
-        string user, hash_pw;
-
-        while (fin >> user >> hash_pw) {
-            if (user == username && hash_pw == hashed_input_pw) {
-                success = true;
-                break;
-            }
-        }
-
-        fin.close();
-        Audit::logAction(username, "LOGIN", success ? "SUCCESS" : "FAILURE");
-    }
-};
-
-    //credentials in users.txt
-   // Username	Hashed Password	Original Password
-   // alice	    sdvv456	         pass123
-   // bob       vxvvg	         sussd
-   // admin	    dplq456     	 amin123
-    
-    //users.txt file format
-    //alice sdvv456     //name and hashed pw with a space in between
-    //bob vxvvg
-    //admin dplq456
-
-
-class PolicyEngine {   //abhi i will ad more conditions in it 
-public:
-    // Delegation rule
-    static bool can_delegate(int from_clearance, int to_clearance) {    // is allowed ki jagah i have made seperate functions for msg, delegation etc
-        return from_clearance <= to_clearance;
-    }
-
-    // Messaging rule
-    static bool canSendMessage(int senderClearance, int recipientClearance, string type) {
-        if (type == "PRIVATE")
-            return true; // Anyone can send private messages up
-
-        if (type == "ALERT")
-            return senderClearance >= 3 && recipientClearance >= 3;
-
-        if (type == "INFO")
-            return true;
-
-        if (type == "WARNING" || type == "EMERGENCY")
-            return senderClearance >= 2; // Manager and Executive only
-
-        return false;
-    }
-};
-
-class Time {
-public:
-    static bool checkExpiry(time_t creationTime, int ttlSeconds) {
-        time_t now = time(0);
-        return difftime(now, creationTime) >= ttlSeconds;
-    }
-};
-
-class Audit {
-public:
-    static void logAction(const string& username, const string& action, const string& status) {
-        ofstream fout("audit.txt", ios::app);
-        if (!fout) {
-            cerr << "Error opening audit log file." << endl;
-            return;
-        }
-
-        time_t now = time(0);
-        string timestamp = string(ctime(&now)); // Convert to std::string
-
-        // if i dont do this to aadhi line next line mein ati hai bec ctime(&now) automatically nextline add kardeta hai at the end
-        if (timestamp.length() > 0 && timestamp[timestamp.length() - 1] == '\n') {
-            timestamp = timestamp.substr(0, timestamp.length() - 1);  //this function will remover \n taakay aik pura sentence aye aik line mein 
-        }
-
-        fout << "[" << timestamp << "] " << username << " " << action << " " << status << "\n";
-        fout.close();
-    }
-};
-      //audit.txt foramt
-      //[Tue May 06 00:51:29 2025] ali LOGIN FAILURE
-      //[Tue May 06 00:51:29 2025] ali LOGIN FAILURE
-      //[Tue May 06 00:52:23 2025] ali LOGIN FAILURE
-      //[Tue May 06 00:52:23 2025] ali LOGIN FAILURE
-
 class Global
 {
 private:
@@ -155,12 +43,138 @@ public:
         cout << "Warning announced!" << endl;
     }
 };
+
+class Tracker
+{
+private:
+    int score;
+
+public:
+    Tracker() : score(100) {}
+
+    void addscore(string findID)
+    {
+        string ID[10];
+        int ach[10];
+        bool found = false;
+        ifstream scores("reports.txt");
+        if (!scores)
+        {
+            cout << "Error opening reports.txt" << endl;
+            return;
+        }
+
+        int i = 0;
+        while (scores >> ID[i] >> ach[i] && i < 10)
+        {
+            i++;
+        }
+
+        scores.close();
+
+        for (int j = 0; j < i; j++)
+        {
+            if (ID[j] == findID)
+            {
+                found = true;
+                score = ach[j] + 10;
+                ach[j] += 10; // Add the achievement score
+                cout << "Score updated. New score: " << score << endl;
+                break;
+            }
+        }
+        scores.close();
+        if (!found)
+            cout << "ID not found. Score unchanged." << endl;
+        else
+        {
+            ofstream app;
+            app.open("reports.txt");
+            for (int k = 0; k < i; k++)
+            {
+                app << ID[k] << " " << ach[k] << endl;
+            }
+            app.close();
+        }
+    }
+
+    void subtractscore(string findID)
+    {
+        string ID[10];
+        int ach[10];
+        ifstream scores("reports.txt");
+        if (!scores)
+        {
+            cout << "Error opening reports.txt" << endl;
+            return;
+        }
+
+        int i = 0;
+        while (scores >> ID[i] >> ach[i] && i < 10)
+        {
+            i++;
+        }
+
+        scores.close();
+
+        for (int j = 0; j < i; j++)
+        {
+            if (ID[j] == findID)
+            {
+                score = ach[j] - 10; // Subtract the achievement score
+                ach[j] -= 10;
+                if (score < 0)
+                {
+                    score = 0;
+                    ach[j] = 0;
+                }
+                cout << "Score updated. New score: " << score << endl;
+                return;
+            }
+        }
+
+        cout << "ID not found. Score unchanged." << endl;
+    }
+
+    int getScore() const
+    {
+        return score;
+    }
+};
 class Date
 {
 };
-
+class Time
+{
+public:
+    static bool checkExpiry(time_t creationTime, int ttlSeconds)
+    {
+        time_t now = time(0);
+        return difftime(now, creationTime) >= ttlSeconds;
+    }
+};
 class Message
 {
+    public:
+    void sendmsg(string emp_id, string T_id, string msgtype)
+    {
+        string msg;
+        cout << "Enter the message: ";
+        cin.ignore();
+        getline(cin, msg);
+        if (msgtype == "PRIVATE")
+        msg = encrypt();
+
+        fstream app;
+        app.open("inbox.txt", ios::app);
+        app << msg << "|" << T_id << "|" << emp_id << "|" << msgtype << endl;
+        cout << "Message Sent! " << endl;
+        app.close();
+    }
+    string encrypt()
+    {
+           return "This is a private message";
+    }
 };
 class Task
 {
@@ -171,13 +185,102 @@ class Task
     char priority;
     Date date;
     Time time;
+    Tracker report;
 
 public:
+#include <iostream>
+#include <fstream>
+#include <cstring>
+
+void updatestatus(const char* taskComp, const char* newstatus)
+{
+    char tasks[10][50];
+    char users[10][5];
+    char assignee[10][5];
+    char priorities[10];
+    char tid[10][5];
+    char status[10][15];
+    int i = 0;
+
+    std::ifstream note("tasks.txt", std::ios::in);
+    if (!note.is_open()) {
+        std::cerr << "Cannot open tasks.txt for reading\n";
+        return;
+    }
+
+    // Read each record
+    while (i < 10 && note.getline(tasks[i], 50, '|')) {
+        note.getline(users[i], 5,   '|');
+        note.getline(assignee[i],5, '|');
+
+        // read single-char priority + delimiter
+        note.get(priorities[i]);
+        note.get();  // consume the '|' after priority
+
+        note.getline(tid[i],    5,   '|');
+        note.getline(status[i], 15,  '\n');
+        ++i;
+    }
+    note.close();
+
+    std::ofstream app("tasks.txt", std::ios::trunc);
+    if (!app.is_open()) {
+        std::cerr << "Cannot open tasks.txt for writing\n";
+        return;
+    }
+
+    // Update matching task and rewrite file
+    for (int j = 0; j < i; ++j) {
+        if (std::strcmp(tid[j], taskComp) == 0) {
+            // safely copy newstatus into status[j]
+            std::strncpy(status[j], newstatus, sizeof(status[j]) - 1);
+            status[j][sizeof(status[j]) - 1] = '\0';
+        }
+        app
+          << tasks[j]    << '|'
+          << users[j]    << '|'
+          << assignee[j] << '|'
+          << priorities[j] << '|'
+          << tid[j]      << '|'
+          << status[j]   << '\n';
+    }
+    app.close();
+}
+
+    void DoTask(string emp_id)
+    {
+        int option;
+        char taskComp[5];
+        char test;
+        cout << "Press 1 to Start working on task, 2 to Exit";
+        cin >> option;
+        cin.ignore();
+        if (option == 1)
+        {
+            cout << "Enter task ID: ";
+            cin.getline(taskComp, 5, '\n');
+            updatestatus(taskComp, "In Progress");
+            cout << "Press 'Y' to complete task : ";
+            cin >> test;
+            if (test == 'Y')
+            {
+                cout << "Task Completed!" << endl;
+                report.addscore(emp_id);
+                updatestatus(taskComp, "Completed");
+            }
+            else
+            {
+                cout << "Task failed! Try process again... " << endl;
+                report.subtractscore(emp_id);
+                updatestatus(taskComp, "In Progress");
+            }
+        }
+    }
     void appendtask(string emp_id) // jo user task assign kar raha hai uski ID in parameter so I can note it in the file
     {
-
         cin.ignore();
         cout << "Access permitted!\nEnter the Receiver's ID: ";
+        cin.ignore();
         std::getline(cin, T_ID); // I will check yahan par ke given ID exist karti hai ya nahi by going through users.txt, first I will notice how you write in that file uske hisaab se ill make a logic for the file handling
 
         cout << "Type the Task: ";
@@ -254,8 +357,9 @@ public:
             }
         }
     }
-    void displayTask(string emp_id)
+    bool displayTask(string emp_id, string type = "assign")
     {
+        if (type == "assign")
         cout << " ------------------- TASKS ----------------------\n";
         char task[50], user[5], assignee[5], status[15], priority[2], tid[5], trash[70];
         bool hastask = false;
@@ -285,35 +389,18 @@ public:
         if (!hastask)
         {
             cout << "No pending tasks right now " << endl;
+            return false;
         }
         else
         {
-            int option, taskComp;
-            char test;
-            cout << "Press 1 to Start working on task, 2 to Exit";
-            cin >> option;
-            if (option == 1)
-            {
-                cout << "Enter task ID: ";
-                cin >> taskComp;
-                cout << "Press 'Y' to complete task : ";
-                cin >> test;
-                if (test == 'Y')
-                {
-                    cout << "Task Completed!" << endl;
-                    //call update function here
-                }
-                else
-                {
-                    cout << "Task failed! " << endl;
-                }
-            }
+            if (type == "assign")
+                DoTask(emp_id);
         }
+        return true;
     }
     void delegateTask(string emp_id)
     {
         char takeID[5], giveID[5], specificID[5];
-        ;
         cout << "Enter the ID of Role you want to delegate the task FROM : ";
         cin.ignore();
         cin.getline(takeID, 5, '\n');
@@ -321,102 +408,151 @@ public:
         cin.getline(giveID, 5, '\n');
 
         cout << "-------------- CHOOSE THE TASK ID TO BE DELEGATED TO OTHER USER -------------\n";
-        displayTask(takeID);
-        cout << "Enter the TASK ID: ";
-        cin.getline(specificID, 5, '\n');
-        cout << "----" << specificID << endl;
-        char tasks[10][50], users[10][5], assignee[10][5], priorities[10], tid[10][5], status[10][15];
-        int i = 0;
-        ifstream note;
-        note.open("tasks.txt", ios::in);
-        while (note.getline(tasks[i], 50, '|'))
+        if (displayTask(takeID, "display"))
         {
-            note.getline(users[i], 5, '|');
-            note.getline(assignee[i], 5, '|');
-            note >> priorities[i];
-            note.getline(tid[i], 5, '|');
-            note.getline(tid[i], 5, '|');
-            note.getline(status[i], 15, '\n');
-            i++;
-        }
-        note.close();
-
-        for (int j = 0; j < i; j++)
-        {
-            if (!strcmp(tid[j], specificID))
+            cout << "Enter the TASK ID: ";
+            cin.getline(specificID, 5, '\n');
+            char tasks[10][50], users[10][5], assignee[10][5], priorities[10], tid[10][5], status[10][15];
+            int i = 0;
+            ifstream note;
+            note.open("tasks.txt", ios::in);
+            while (note.getline(tasks[i], 50, '|'))
             {
-                strcpy(users[j], giveID);
-                strcpy(status[j], "Delegated");
+                note.getline(users[i], 5, '|');
+                note.getline(assignee[i], 5, '|');
+                note >> priorities[i];
+                note.getline(tid[i], 5, '|');
+                note.getline(tid[i], 5, '|');
+                note.getline(status[i], 15, '\n');
+                i++;
             }
-        }
+            note.close();
 
-        ofstream app;
-        app.open("tasks.txt");
-        for (int k = 0; k < i; k++)
+            for (int j = 0; j < i; j++)
+            {
+                if (!strcmp(tid[j], specificID))
+                {
+                    strcpy(users[j], giveID);
+                    strcpy(status[j], "Delegated");
+                }
+            }
+
+            ofstream app;
+            app.open("tasks.txt");
+            for (int k = 0; k < i; k++)
+            {
+                app << tasks[k] << "|" << users[k] << "|" << assignee[k] << "|" << priorities[k] << "|" << tid[k] << "|" << status[k] << endl;
+            }
+            cout << "Task Delegated!" << endl;
+            report.addscore(emp_id);
+        }
+        else
         {
-            app << tasks[k] << "|" << users[k] << "|" << assignee[k] << "|" << priorities[k] << "|" << tid[k] << "|" << status[k] << endl;
+            return;
         }
     }
 };
 
+class PolicyEngine
+{ // abhi i will add more conditions in it
+public:
+    static bool can_assign(int from_clearance, int to_clearance)
+    {
+        return true;
+    }
+    // Delegation rule
+    static bool can_delegate(int from_clearance, int to_clearance)
+    { // is allowed ki jagah i have made seperate functions for msg, delegation etc
+        return from_clearance <= to_clearance;
+    }
 
-// class Employee {
-//     protected:
-//     string emp_id;
-//     string pw;
-//     char grade;
-//     Message* msg;
-//     Task* task;
-//     PolicyEngine allowed;
-//     Audit audit;
+    // Messaging rule
+    static bool canSendMessage(int senderClearance, int recipientClearance, string type)
+    {
+        if (type == "PRIVATE")
+            return true; // Anyone can send private messages up
 
-//     public:
-//     void sendmsg();
-//     void receivemsg();
-//     void CreateTask()
-//     {
+        if (type == "ALERT")
+            return senderClearance >= 3 && recipientClearance >= 3;
 
-//         grade = 'M'; // for my ease, iski assignment you will do once you update the data in users.txt
-//         char target;
-//         cout << "Enter the grade of the person you want to Assign a Task to: ";
-//         cin >> target;
-//         if (allowed.isAllowed(grade, target))
-//         {
-//             task = new Task; //dynamically allocating space for a new task
-//             task->appendtask("M5");
-//         }
-//     }
-//     void delegate_task()
-//     {
-//         grade = 'M'; // for my ease, iski assignment you will do once you update the data in users.txt
-//         char target;
-//         cout << "Enter the grade of the person you want to Delegate a Task to: ";
-//         cin >> target;
-//         if (allowed.isAllowed(grade, target))
-//         {
-//             cout << "Access Permitted! \n";
-//             if (!task)
-//             {
-//                 delete task; //recheck any memory issue here
-//             }
-//             task = new Task; //dynamically allocating space for a new task
-//             task->delegateTask("M2");
-//         }
-//     }
-//     void displayTask()
-//     {
-//         if (!task)
-//         {
-//             delete task; //recheck any memory issue here
-//         }
-//         task = new Task;
-//          task->displayTask("J6");
-//     }
-//     void Login();
-//     string hashpw();
-//     virtual void showMenu() = 0;
-//     ~Employee()
-//     {
-//         delete task;
-//     }
-//     };
+        if (type == "INFO")
+            return true;
+
+        if (type == "WARNING" || type == "EMERGENCY")
+            return senderClearance >= 2; // Manager and Executive only
+
+        return false;
+    }
+};
+
+class Audit
+{
+public:
+    static void logAction(const string &username, const string &action, const string &status)
+    {
+        ofstream fout("audit.txt", ios::app);
+        if (!fout)
+        {
+            cerr << "Error opening audit log file." << endl;
+            return;
+        }
+
+        time_t now = time(0);
+        string timestamp = string(ctime(&now)); // Convert to std::string
+
+        // if i dont do this to aadhi line next line mein ati hai bec ctime(&now) automatically nextline add kardeta hai at the end
+        if (timestamp.length() > 0 && timestamp[timestamp.length() - 1] == '\n')
+        {
+            timestamp = timestamp.substr(0, timestamp.length() - 1); // this function will remover \n taakay aik pura sentence aye aik line mein
+        }
+
+        fout << "[" << timestamp << "] " << username << " " << action << " " << status << "\n";
+        fout.close();
+    }
+};
+class Login
+{
+    string username;
+    string input_pw;
+    string hashed_input_pw;
+    bool success;
+
+public:
+    Login(string user, string pw) : username(user), input_pw(pw), success(false)
+    {
+        hashed_input_pw = hashpw(pw);
+        checkCredentials();
+    }
+
+    bool isSuccess() const { return success; }
+
+private:
+    string hashpw(string pw)
+    {
+        string hash = "";
+        for (int i = 0; i < pw.length(); i++)
+        {
+            char shifted = pw[i] + 3; // Shift character 3 positions forward
+            hash += shifted;
+        }
+        return hash;
+    }
+
+    void checkCredentials()
+    {
+        ifstream fin("users.txt");
+        string user, hash_pw;
+
+        while (fin >> user >> hash_pw)
+        {
+            if (user == username && hash_pw == hashed_input_pw)
+            {
+                success = true;
+                break;
+            }
+        }
+
+        fin.close();
+        Audit::logAction(username, "LOGIN", success ? "SUCCESS" : "FAILURE");
+    }
+};
