@@ -236,7 +236,6 @@ class Task
     string T_ID; // I added this extra member for noting down the ID of the target member
     string status;
     char priority;
-    Date date;
     Time time;
     Tracker report;
 
