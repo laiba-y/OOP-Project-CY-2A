@@ -5,7 +5,7 @@
 int main()
 {
 
-//J6: password1
+//J6: pass123
 //M2: password2
 //D1: nopw123
 //E1: pw123
@@ -17,6 +17,7 @@ int main()
     int role;
     cout << "Press 1 for junior, 2 for manager, 3 for director 4 for executive and 5 to exit ";
     cin >> role;
+    cin.ignore();
     while (role < 1 or role > 5)
     {
         cout << "Invalid option, Try again: ";
@@ -40,14 +41,14 @@ int main()
     string otp = user.generate_otp();
     time_t otp_gen_time = time(0);
 
-    cout << "Your one‑time code is: " << otp << "\n";
+    cout << "Your one-time code is: " << otp << "\n";
     cout << "Enter OTP: ";
-    string input_otp;
-    cin >> input_otp;
+    string realotp;
+    getline(cin, realotp);
 
     // 4) Verify OTP and TTL
-    bool expired = Time_Manager::checkExpiry(otp_gen_time, otp_ttl);
-    if (input_otp == otp && !expired) {
+    
+    if (realotp == otp && !(Time_Manager::checkExpiry(otp_gen_time, otp_ttl))) {
         cout << "OTP Verified. Login fully successful.\n";
     } else {
         cout << "Incorrect or expired OTP. Access denied.\n";
@@ -57,19 +58,19 @@ int main()
     
     if (role == 1)
     {
-        juniorfunc(ID);
+        juniorfunc(username);
     }
     else if (role == 2)
     {
-        managerfunc(ID);
+        managerfunc(username);
     }
     else if (role == 3)
     {
-        directorfunc(ID);
+        directorfunc(username);
     }
     else if (role == 4)
     {
-        executivefunc(ID);
+        executivefunc(username);
     }
     else
     {
