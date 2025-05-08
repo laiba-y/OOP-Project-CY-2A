@@ -161,6 +161,34 @@ public:
         return o;
     }
 };
+class Audit {
+    public:
+        static void logAction(const string& username, const string& action, const string& status) {
+            ofstream fout("audit.txt", ios::app);
+            if (!fout) {
+                cerr << "Error opening audit log file." << endl;
+                return;
+            }
+    
+            time_t now = time(0);
+            string timestamp = string(ctime(&now)); // Convert to std::string
+    
+            // if i dont do this to aadhi line next line mein ati hai bec ctime(&now) automatically nextline add kardeta hai at the end
+            if (timestamp.length() > 0 && timestamp[timestamp.length() - 1] == '\n') {
+                timestamp = timestamp.substr(0, timestamp.length() - 1);  //this function will remover \n taakay aik pura sentence aye aik line mein 
+            }
+    
+            fout << "[" << timestamp << "] " << username << " " << action << " " << status << "\n";
+            fout.close();
+        }
+    };
+          //audit.txt foramt
+          //[Tue May 06 00:51:29 2025] ali LOGIN FAILURE
+          //[Tue May 06 00:51:29 2025] ali LOGIN FAILURE
+          //[Tue May 06 00:52:23 2025] ali LOGIN FAILURE
+          //[Tue May 06 00:52:23 2025] ali LOGIN FAILURE
+    
+    
 
 class Time_Manager
 {
@@ -183,7 +211,7 @@ public:
         cin.ignore();
         getline(cin, msg);
         if (msgtype == "PRIVATE")
-            msg = encrypt();
+            msg = encrypt(msg);
 
         fstream app;
         app.open("inbox.txt", ios::app);
@@ -191,6 +219,7 @@ public:
         cout << "Message Sent! " << endl;
         app.close();
         report.addscore(emp_id, 2);
+        Audit::logAction(emp_id, "MESSAGE", "SENT");
     }
    
         string encrypt(const string& plain) {
@@ -250,7 +279,7 @@ class Task
     string T_ID; // I added this extra member for noting down the ID of the target member
     string status;
     char priority;
-    Time time;
+    Time_Manager time;
     Tracker report;
 
 public:
@@ -334,12 +363,14 @@ public:
                 cout << "Task Completed!" << endl;
                 report.addscore(emp_id);
                 updatestatus(taskComp, "Completed");
+                Audit::logAction(emp_id, "TASK", "COMPLETED");
             }
             else
             {
                 cout << "Task failed! Try process again... " << endl;
                 report.subtractscore(emp_id);
                 updatestatus(taskComp, "In Progress");
+                Audit::logAction(emp_id, "TASK", "IN PROGRESS");
             }
         }
     }
@@ -551,33 +582,6 @@ public:
     }
 };
 
-class Audit {
-public:
-    static void logAction(const string& username, const string& action, const string& status) {
-        ofstream fout("audit.txt", ios::app);
-        if (!fout) {
-            cerr << "Error opening audit log file." << endl;
-            return;
-        }
-
-        time_t now = time(0);
-        string timestamp = string(ctime(&now)); // Convert to std::string
-
-        // if i dont do this to aadhi line next line mein ati hai bec ctime(&now) automatically nextline add kardeta hai at the end
-        if (timestamp.length() > 0 && timestamp[timestamp.length() - 1] == '\n') {
-            timestamp = timestamp.substr(0, timestamp.length() - 1);  //this function will remover \n taakay aik pura sentence aye aik line mein 
-        }
-
-        fout << "[" << timestamp << "] " << username << " " << action << " " << status << "\n";
-        fout.close();
-    }
-};
-      //audit.txt foramt
-      //[Tue May 06 00:51:29 2025] ali LOGIN FAILURE
-      //[Tue May 06 00:51:29 2025] ali LOGIN FAILURE
-      //[Tue May 06 00:52:23 2025] ali LOGIN FAILURE
-      //[Tue May 06 00:52:23 2025] ali LOGIN FAILURE
-
 
 class Login {
     string username;
@@ -586,6 +590,7 @@ class Login {
     bool success;
 
 public:
+ Login(){}
     Login(string user, string pw) : username(user), input_pw(pw), success(false) {
         hashed_input_pw = hashpw(pw);
         checkCredentials();
@@ -601,7 +606,6 @@ public:
     }
     return otp;
     }
-private:
    string hashpw(string pw) {
     pw += "x7#";  // Append extra characters (salt)
     string encrypted = "";
@@ -673,7 +677,7 @@ public:
         for (int i = 0; i <= lenText - lenKey; i++) {  //to prevent incorrect comparison
             bool match = true;
             for (int j = 0; j < lenKey; j++) {
-                if (text[i + j] != keyword[j]) {
+                if (line[i + j] != word[j]) {
                     match = false;
                     break;
                 }
