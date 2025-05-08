@@ -82,7 +82,7 @@ public:
                 found = true;
                 score = ach[j] + add;
                 ach[j] += add; // Add the achievement score
-                cout << "Score updated. New score: " << score << endl;
+                cout << "-------- GREAT JOB!  New score: " << score << endl;
                 break;
             }
         }
@@ -131,7 +131,6 @@ public:
                     score = 0;
                     ach[j] = 0;
                 }
-                cout << "Score updated. New score: " << score << endl;
                 return;
             }
         }
@@ -156,7 +155,7 @@ public:
         {
             if (checkID == report.id)
             {
-                cout << "Obtained score : " << score << endl;
+                cout << "OBTAINED SCORE  : " << score << endl;
             }
         }
         return o;
@@ -301,6 +300,7 @@ public:
 
     void receivemsg(string emp_id)
     {
+        cout << "------------------------------------------ INBOX -------------------------------------------" << endl << endl;
         ifstream in("inbox.txt");
         if (!in)
         {
@@ -450,7 +450,7 @@ public:
         int option;
         char taskComp[5];
         char test;
-        cout << "Press 1 to Start working on task, 2 to Exit";
+        cout << "\nPress \n1. Start working \n2. Back to Dash Board \nENTER HERE: " ;
         cin >> option;
         cin.ignore();
         if (option == 1)
@@ -462,7 +462,7 @@ public:
             cin >> test;
             if (test == 'Y')
             {
-                cout << "Task Completed!" << endl;
+                cout << "^^^^^^^^TASK COMPLETED^^^^^^^^^^^^" << endl;
                 report.addscore(emp_id);
                 updatestatus(taskComp, "Completed");
                 Audit::logAction(emp_id, "TASK", "COMPLETED");
@@ -482,7 +482,7 @@ public:
         cin.ignore();
         // I will check yahan par ke given ID exist karti hai ya nahi by going through users.txt, first I will notice how you write in that file uske hisaab se ill make a logic for the file handling
 
-        cout << "Type the Task: ";
+        cout << "ENTER TASK: ";
         std::getline(cin, task); // taking the task
 
         cout << "Enter priority (H/M/L): ";
@@ -512,7 +512,7 @@ public:
             //  I will use this sequence for when im reading and displaying from the file, pehle bar tak read kar ke task phenk dungi then so on
             //  baki saare status update karna meri zimmedaari hai but you have to come up with the logic of "expired" wala because you're dealing with deadlines
             //  to once wo ban jaaye you can make a function of "isexpired" wahan se mai check kar ke expire kar dungi task ko
-            cout << "Task Assigned!\n"
+            cout << "^^^^^^^^^^^^^ TASK ASSIGNED ^^^^^^^^^^^^^^^!\n"
                  << endl;
         }
         else
@@ -573,12 +573,9 @@ public:
     }
     bool displayTask(string emp_id, string type = "assign")
     {
-        ////CHECKPOINT
-        /////CHECKPOINT
-        ////CHECKPOINT
         Expired();
         if (type == "assign")
-            cout << " ------------------- TASKS ----------------------\n";
+            cout << " ------------------------------------------ TASKS -------------------------------------------\n";
         char task[50], user[5], assignee[5], status[15], priority[2], tid[5], trash[70];
         time_t catchcreate;
         int ttl;
@@ -609,7 +606,7 @@ public:
         note.close();
         if (!hastask)
         {
-            cout << "No pending tasks right now " << endl;
+            cout << "NO PENDING TASKS! " << endl;
             return false;
         }
         else
@@ -621,17 +618,15 @@ public:
     }
     void delegateTask(string emp_id)
     {
-        char takeID[5], giveID[5], specificID[5];
+        string takeID;
+        char giveID[5], specificID[5];
+        takeID = emp_id;
         time_t catchcreate[10];
         int catchttl[10];
-        cout << "Enter the ID of Role you want to delegate the task FROM : ";
-        cin.ignore();
-        cin.getline(takeID, 5, '\n');
-
         cout << "Enter the ID of Role you want to delegate task TO : ";
         cin.getline(giveID, 5, '\n');
 
-        cout << "-------------- CHOOSE THE TASK ID TO BE DELEGATED TO OTHER USER -------------\n";
+        cout << "----------------------- CHOOSE THE TASK ID TO BE DELEGATED TO OTHER USER -----------------------\n";
         if (displayTask(takeID, "display"))
         {
             cout << "Enter the TASK ID: ";
@@ -669,7 +664,7 @@ public:
             {
                 app << tasks[k] << "|" << users[k] << "|" << assignee[k] << "|" << priorities[k] << "|" << tid[k] << "|" << status[k] << "|" << catchcreate[k] << " " << catchttl[k] << endl;
             }
-            cout << "Task Delegated!" << endl;
+            cout << "^^^^^^^^^^^^ TASK DELEGATED ^^^^^^^^^^" << endl;
         }
         else
         {
@@ -838,13 +833,13 @@ public:
     }
  // Friend function to overload <<
     friend ostream& operator<<(ostream& out, const Anomaly& a) {
-        os << "\n===== ANOMALY REPORT =====\n";
+        out << "\n======================== ANOMALY REPORT ==============================\n";
         if (a.loginFailures > 3)
-            os << "⚠️  More than 3 failed logins detected.\n";
+            out << "⚠️  More than 3 failed logins detected.\n";
         if (a.permissionDenials > 2)
-            os << "⚠️  More than 2 permission denials detected.\n";
+            out << "⚠️  More than 2 permission denials detected.\n";
         if (a.loginFailures <= 3 && a.permissionDenials <= 2)
-            os << "No suspicious activity found.\n";
-        return os;
+            out << "No suspicious activity found.\n";
+        return out;
     }
 };
