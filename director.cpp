@@ -39,7 +39,7 @@ void directorfunc(string ID)
     }
     else if (facility == 6)
     {
-        D.sendGlobalMsg();
+        D.sendGlobalMsg(ID);
     }
     else if (facility == 7)
     {
@@ -55,20 +55,20 @@ void directorfunc(string ID)
     }
     else
     {
-        D.adduser();
+        D.adduser(ID);
     }
     int option;
-    cout << "Press 3 to Continue, 4 to Exit: ";
-    cin >> option;
-
-    while (option < 3 || option > 4) {
-        cout << "Invalid option, Try again: ";
+        cout << "Press \n1) HOME PAGE \n2) LOG OUT \nENTER HERE: ";
         cin >> option;
-    }
 
-    if (option == 4) {
-        cout << "----------------------------- LOGGING OUT ----------------------------" << endl;
-        running = false;
-    }
+        while (option < 3 || option > 4) {
+            cout << "Invalid option, Try again: ";
+            cin >> option;
+        }
+
+        if (option == 4) {
+            cout << "#################################### LOGGING OUT #######################################" << endl;
+            running = false;
+        }
 }
 }
