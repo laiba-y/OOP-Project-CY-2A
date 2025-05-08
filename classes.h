@@ -781,7 +781,7 @@ public:
         return false;
     }
  // Friend function to overload <<
-    friend ostream& operator<<(ostream& os, const Anomaly& a) {
+    friend ostream& operator<<(ostream& out, const Anomaly& a) {
         os << "\n===== ANOMALY REPORT =====\n";
         if (a.loginFailures > 3)
             os << "⚠️  More than 3 failed logins detected.\n";
