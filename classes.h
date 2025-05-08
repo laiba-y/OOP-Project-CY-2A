@@ -722,7 +722,14 @@ public:
 
 class Anomaly
 {
+
+private:
+    int loginFailures;
+    int permissionDenials;
+
 public:
+    Anomaly() : loginFailures(0), permissionDenials(0) {}
+
     static void detect()
     {
         ifstream fin("audit.txt");
