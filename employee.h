@@ -51,10 +51,12 @@ public:
     }
     void showperformance(string emp_id)
     {
-        cout << "---------------- REPORT " << emp_id << " -----------------------" << endl;
-        cout << " DEFAULT SCORE : 100" << endl;
-        cout << "Marking criteria: \nComplete Task +10 \nFail Task -10\nDelegate Task +5\n";
+        cout << ".................................... REPORT " << emp_id << " ...................................." << endl << endl;
+        
+        cout << "PERFORMANCE CRITERIA :  \n1) COMPLETING TASKS +10           2) EXPIRING TASK -10             3) SENDING MESSAGE +2\n";
+        cout << "FOR HIGHER UPS:           4) SEND GLOBAL NOTIFICATION +3    5) HIRE A NEW USER +20       " << endl;
         report.setid(emp_id);
+        cout << "DEFAULT SCORE : 100" << endl;
         cout << report ;
         
     }
@@ -64,8 +66,13 @@ public:
         string msgtype;
         string T_id;
         int Tgrade;
-        cout << "Enter grade of recipient: ";
+        cout << "Enter grade of recipient (1-4): ";
         cin >> Tgrade;
+        while (Tgrade < 1 or Tgrade > 4)
+        {
+            cout << "Invalid grade, try again in the range : ";
+            cin >> Tgrade;
+        }
         cout << "Enter ID of recipient: ";
         cin.ignore();
         getline(cin, T_id);
@@ -74,7 +81,7 @@ public:
             cout << "ID does not exist, please choose another user: ";
             getline(cin, T_id);
         }
-        cout << "Press 1 for PRIVATE, 2 for INFO, 3 for ALERT, 4 for WARNING : ";
+        cout << "Press \n1. PRIVATE  \n2. INFO \n3. ALERT \n4. WARNING \nENTER HERE: ";
         cin >> msgtostring;
 
         while (msgtostring < 1 or msgtostring > 4)
@@ -92,7 +99,7 @@ public:
         else
             msgtype = "WARNING";
 
-        if (allowed.canSendMessage(grade, Tgrade, msgtype))
+        if (allowed.canSendMessage(grade, Tgrade, msgtype)) //checking permission
         {
             msg->sendmsg(emp_id, T_id, msgtype);
         }
@@ -114,7 +121,7 @@ public:
     {
         string T_ID;
         int target;
-        cout << "Enter the grade of the person you want to Assign a Task to: ";
+        cout << "Enter the grade of ASSIGNEE (1 - 4): ";
         cin >> target;
         while (target < 1 or target > 4)
         {
@@ -123,7 +130,7 @@ public:
         }
         if (allowed.can_assign(grade, target))
         {
-            cout << "Access permitted!\nEnter the Receiver's ID: ";
+            cout << "Access permitted!\nEnter the ASSIGNEE ID: ";
             cin.ignore();
             std::getline(cin, T_ID);
             if (!IDexists(T_ID))
@@ -144,7 +151,7 @@ public:
     {
         string T_ID;
         int target;
-        cout << "Enter the grade of the person you want to Delegate a Task to: ";
+        cout << "Enter the grade of DELEGATED ASSIGNEE :  ";
         cin >> target;
 
         while (target < 1 or target > 4)
@@ -165,7 +172,7 @@ public:
         }
         else
         {
-            cout << "Permission denied! " << endl;
+            cout << " PERMISSION DENIED! " << endl;
         }
     }
     void displayTask()
