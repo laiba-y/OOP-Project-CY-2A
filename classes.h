@@ -780,4 +780,15 @@ public:
         }
         return false;
     }
+ // Friend function to overload <<
+    friend ostream& operator<<(ostream& os, const Anomaly& a) {
+        os << "\n===== ANOMALY REPORT =====\n";
+        if (a.loginFailures > 3)
+            os << "⚠️  More than 3 failed logins detected.\n";
+        if (a.permissionDenials > 2)
+            os << "⚠️  More than 2 permission denials detected.\n";
+        if (a.loginFailures <= 3 && a.permissionDenials <= 2)
+            os << "No suspicious activity found.\n";
+        return os;
+    }
 };
