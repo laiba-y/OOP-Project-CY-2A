@@ -51,7 +51,7 @@ class Tracker
 private:
     int score;
     string id;
-
+    
 public:
     Tracker() : score(100) {}
 
@@ -161,6 +161,43 @@ public:
         }
         return o;
     }
+    //operator overloading 
+    void operator += (int num)
+    {
+        string ID[10];
+        int ach[10];
+        ifstream scores("reports.txt");
+        if (!scores)
+        {
+            cout << "Error opening reports.txt" << endl;
+            return;
+        }
+
+        int i = 0;
+        while (scores >> ID[i] >> ach[i] && i < 10)
+        {
+            i++;
+        }
+
+        scores.close();
+        for (int j = 0; j < i; j++)
+        {
+            if (ID[j] == id)
+            {
+                score = ach[j] - 10; // Subtract the achievement score
+                ach[j] -= 10;
+                if (score < 0)
+                {
+                    score = 0;
+                    ach[j] = 0;
+                }
+                cout << "Score updated. New score: " << score << endl;
+                return;
+            }
+        }
+
+        cout << "ID not found. Score unchanged." << endl;
+    }
 };
 class Audit
 {
@@ -210,7 +247,7 @@ class Message
 {
 private:
     Tracker report;
-
+    string type;
 public:
     void sendmsg(string emp_id, string T_id, string msgtype)
     {
@@ -226,7 +263,8 @@ public:
         app << msg << "|" << T_id << "|" << emp_id << "|" << msgtype << "|" << "Unread" << endl;
         cout << "Message Sent! " << endl;
         app.close();
-        report.addscore(emp_id, 2);
+        report.setid(emp_id);
+        report += 2;
         Audit::logAction(emp_id, "MESSAGE", "SENT");
     }
 
@@ -248,6 +286,17 @@ public:
             plain[i] = plain[i] - 3;
         }
         return plain;
+    }
+    bool operator == (string& compare)
+    {
+            if (type == compare)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
     }
 
     void receivemsg(string emp_id)
