@@ -35,14 +35,13 @@ void juniorfunc(string ID) {
         {
             J.showperformance(ID);
         }
-        else 
-        {
-            cout << "----------------------------------- LOGGING OUT ----------------------------------------" << endl;
-            return;
-        }
-
-        int option;
-        cout << "Press 3 to Continue, 4 to Exit: ";
+        else
+    {
+        cout << "#################################### LOGGING OUT #######################################" << endl;
+        return;
+    }
+    int option;
+        cout << "Press \n1) HOME PAGE \n2) LOG OUT \nENTER HERE: ";
         cin >> option;
 
         while (option < 3 || option > 4) {
@@ -51,7 +50,7 @@ void juniorfunc(string ID) {
         }
 
         if (option == 4) {
-            cout << "----------------------------- LOGGING OUT ----------------------------" << endl;
+            cout << "#################################### LOGGING OUT #######################################" << endl;
             running = false;
         }
     }
