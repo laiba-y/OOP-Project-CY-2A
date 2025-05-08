@@ -51,6 +51,7 @@ class Tracker
 private:
     int score;
     string id;
+
 public:
     Tracker() : score(100) {}
 
@@ -139,13 +140,13 @@ public:
     }
     void setid(string emp_id)
     {
-          id = emp_id;
+        id = emp_id;
     }
     int getScore() const
     {
         return score;
     }
-    friend ostream& operator << (ostream& o, const Tracker& report)
+    friend ostream &operator<<(ostream &o, const Tracker &report)
     {
         string checkID;
         int score;
@@ -153,42 +154,44 @@ public:
         in.open("reports.txt");
         while (getline(in, checkID, ' ') && (in >> score))
         {
-             if (checkID== report.id)
-             {
+            if (checkID == report.id)
+            {
                 cout << "Obtained score : " << score << endl;
-             }
+            }
         }
         return o;
     }
 };
-class Audit {
-    public:
-        static void logAction(const string& username, const string& action, const string& status) {
-            ofstream fout("audit.txt", ios::app);
-            if (!fout) {
-                cerr << "Error opening audit log file." << endl;
-                return;
-            }
-    
-            time_t now = time(0);
-            string timestamp = string(ctime(&now)); // Convert to std::string
-    
-            // if i dont do this to aadhi line next line mein ati hai bec ctime(&now) automatically nextline add kardeta hai at the end
-            if (timestamp.length() > 0 && timestamp[timestamp.length() - 1] == '\n') {
-                timestamp = timestamp.substr(0, timestamp.length() - 1);  //this function will remover \n taakay aik pura sentence aye aik line mein 
-            }
-    
-            fout << "[" << timestamp << "] " << username << " " << action << " " << status << "\n";
-            fout.close();
+class Audit
+{
+public:
+    static void logAction(const string &username, const string &action, const string &status)
+    {
+        ofstream fout("audit.txt", ios::app);
+        if (!fout)
+        {
+            cerr << "Error opening audit log file." << endl;
+            return;
         }
-    };
-          //audit.txt foramt
-          //[Tue May 06 00:51:29 2025] ali LOGIN FAILURE
-          //[Tue May 06 00:51:29 2025] ali LOGIN FAILURE
-          //[Tue May 06 00:52:23 2025] ali LOGIN FAILURE
-          //[Tue May 06 00:52:23 2025] ali LOGIN FAILURE
-    
-    
+
+        time_t now = time(0);
+        string timestamp = string(ctime(&now)); // Convert to std::string
+
+        // if i dont do this to aadhi line next line mein ati hai bec ctime(&now) automatically nextline add kardeta hai at the end
+        if (timestamp.length() > 0 && timestamp[timestamp.length() - 1] == '\n')
+        {
+            timestamp = timestamp.substr(0, timestamp.length() - 1); // this function will remover \n taakay aik pura sentence aye aik line mein
+        }
+
+        fout << "[" << timestamp << "] " << username << " " << action << " " << status << "\n";
+        fout.close();
+    }
+};
+// audit.txt foramt
+//[Tue May 06 00:51:29 2025] ali LOGIN FAILURE
+//[Tue May 06 00:51:29 2025] ali LOGIN FAILURE
+//[Tue May 06 00:52:23 2025] ali LOGIN FAILURE
+//[Tue May 06 00:52:23 2025] ali LOGIN FAILURE
 
 class Time_Manager
 {
@@ -198,11 +201,16 @@ public:
         time_t now = time(0);
         return difftime(now, creationTime) >= ttlSeconds;
     }
+    int convertToSeconds(int hours, int minutes, int seconds)
+    {
+        return hours * 3600 + minutes * 60 + seconds;
+    }
 };
 class Message
 {
-    private:
+private:
     Tracker report;
+
 public:
     void sendmsg(string emp_id, string T_id, string msgtype)
     {
@@ -221,22 +229,26 @@ public:
         report.addscore(emp_id, 2);
         Audit::logAction(emp_id, "MESSAGE", "SENT");
     }
-   
-        string encrypt(const string& plain) {
+
+    string encrypt(const string &plain)
+    {
         string cipher = plain;
-        for (size_t i = 0; i < cipher.size(); ++i) {
+        for (size_t i = 0; i < cipher.size(); ++i)
+        {
             cipher[i] = cipher[i] + 3;
         }
         return cipher;
     }
-    
-  string decrypt(const string& cipher) {
-    string plain = cipher;
-    for (size_t i = 0; i < plain.size(); ++i) {
-        plain[i] = plain[i] - 3;
+
+    string decrypt(const string &cipher)
+    {
+        string plain = cipher;
+        for (size_t i = 0; i < plain.size(); ++i)
+        {
+            plain[i] = plain[i] - 3;
+        }
+        return plain;
     }
-    return plain;
-}
 
     void receivemsg(string emp_id)
     {
@@ -261,9 +273,10 @@ public:
             if (receiver == emp_id && status == "Unread") // only showing unread messages
             {
                 // Decrypt if the message is PRIVATE
-            if (msgType == "PRIVATE") {
-                message = decrypt(message);
-            }
+                if (msgType == "PRIVATE")
+                {
+                    message = decrypt(message);
+                }
                 std::cout << "Message:  " << message << "\nSender:   " << sender << "\nType:     " << msgType << "\nStatus:   " << status << "\n"
                           << "-----------------------------\n";
             }
@@ -279,10 +292,46 @@ class Task
     string T_ID; // I added this extra member for noting down the ID of the target member
     string status;
     char priority;
-    Time_Manager time;
+    Time_Manager Time;
     Tracker report;
 
 public:
+    void Expired(int index = 0)
+    {
+        string task, emp, sender, status, priority;
+        char taskid[10];
+        time_t create;
+        int ttl;
+        ifstream in;
+        in.open("tasks.txt");
+
+        string line;
+        for (int i = 0; i < index; ++i)
+        {
+            if (!getline(in, line))
+                return; // base case: no more lines
+        }
+
+        if (getline(in, task, '|'))
+        {
+            getline(in, emp, '|');
+            getline(in, sender, '|');
+            getline(in, priority, '|');
+            in.getline(taskid, 10, '|');
+            getline(in, status, '|');
+            in >> create;
+            in >> ttl;
+            if (Time.checkExpiry(create, ttl))
+            {
+                cout << taskid << endl;
+                updatestatus(taskid, "Expired");
+            }
+        }
+        else
+            return;
+
+        return Expired(index + 1);
+    }
     void updatestatus(const char *taskComp, const char *newstatus)
     {
         char tasks[10][50];
@@ -291,6 +340,8 @@ public:
         char priorities[10];
         char tid[10][5];
         char status[10][15];
+        time_t catchcreate[10];
+        int ttls[10];
         int i = 0;
 
         std::ifstream note("tasks.txt", std::ios::in);
@@ -311,7 +362,9 @@ public:
             note.get(); // consume the '|' after priority
 
             note.getline(tid[i], 5, '|');
-            note.getline(status[i], 15, '\n');
+            note.getline(status[i], 15, '|');
+            note >> catchcreate[i];
+            note >> ttls[i];
             ++i;
         }
         note.close();
@@ -338,7 +391,7 @@ public:
                 << assignee[j] << '|'
                 << priorities[j] << '|'
                 << tid[j] << '|'
-                << status[j] << '\n';
+                << status[j] << '|' << catchcreate[j] << " " << ttls[j] << endl;
         }
         app.close();
     }
@@ -376,6 +429,7 @@ public:
     }
     void appendtask(string emp_id, string T_ID) // jo user task assign kar raha hai uski ID in parameter so I can note it in the file
     {
+        int hour, minutes, seconds;
         cin.ignore();
         // I will check yahan par ke given ID exist karti hai ya nahi by going through users.txt, first I will notice how you write in that file uske hisaab se ill make a logic for the file handling
 
@@ -385,13 +439,24 @@ public:
         cout << "Enter priority (H/M/L): ";
         cin >> priority;
 
+        cout << "Enter deadline in hours: ";
+        cin >> hour;
+
+        cout << "Enter deadline in minutes: ";
+        cin >> minutes;
+
+        cout << "Enter deadline in seconds: ";
+        cin >> seconds;
+        
+        int ttl = Time.convertToSeconds(hour, minutes, seconds);
+        time_t create = time(0);
         cout << "Enter task ID: ";
         cin >> TaskID;
         if (priority == 'L') // making sure the higher priority tasks stay up in the file
         {
             fstream note;
             note.open("tasks.txt", ios::app);
-            note << task << "|" << T_ID << "|" << emp_id << "|" << priority << "|" << TaskID << "|" << "Assigned" << endl;
+            note << task << "|" << T_ID << "|" << emp_id << "|" << priority << "|" << TaskID << "|" << "Assigned" << "|" << create << " " << ttl << endl;
             note.close();
             // deadline ki input kis format mai hogi wo bata dena and le lena yahan par
             //  pehle goes the task in the file then the target id then the sender id phir priority and then taskID and then deadline which I didnt add yet and then status
@@ -404,6 +469,8 @@ public:
         else
         {
             char tasks[10][50], users[10][5], assignee[10][5], priorities[10], tid[10][5], status[10][15];
+            time_t catchcreate[10];
+            int catchttl[10];
             int i = 0;
             ifstream note;
             note.open("tasks.txt", ios::in);
@@ -414,7 +481,9 @@ public:
                 note >> priorities[i];
                 note.getline(tid[i], 5, '|');
                 note.getline(tid[i], 5, '|');
-                note.getline(status[i], 15, '\n');
+                note.getline(status[i], 15, '|');
+                note >> catchcreate[i];
+                note >> catchttl[i];
                 i++;
             }
             note.close();
@@ -423,41 +492,47 @@ public:
             app.open("tasks.txt");
             if (priority == 'H')
             {
-                app << task << "|" << T_ID << "|" << emp_id << "|" << priority << "|" << TaskID << "|" << "Assigned" << endl;
+                app << task << "|" << T_ID << "|" << emp_id << "|" << priority << "|" << TaskID << "|" << "Assigned" << "|" << create << " " << ttl << endl;
             }
             for (int j = 0; j < i; j++)
             {
                 if (priorities[j] == 'H')
                 {
-                    app << tasks[j] << "|" << users[j] << "|" << assignee[j] << "|" << priorities[j] << "|" << tid[j] << "|" << status[j] << endl;
+                    app << tasks[j] << "|" << users[j] << "|" << assignee[j] << "|" << priorities[j] << "|" << tid[j] << "|" << status[j] << "|" << catchcreate[j] << " " << catchttl[j] << endl;
                 }
             }
             // appending medium priority tasks
             if (priority == 'M')
             {
-                app << task << "|" << T_ID << "|" << emp_id << "|" << priority << "|" << TaskID << "|" << "Assigned" << endl;
+                app << task << "|" << T_ID << "|" << emp_id << "|" << priority << "|" << TaskID << "|" << "Assigned" << "|" << create << " " << ttl << endl;
             }
             for (int j = 0; j < i; j++)
             {
                 if (priorities[j] == 'M')
                 {
-                    app << tasks[j] << "|" << users[j] << "|" << assignee[j] << "|" << priorities[j] << "|" << tid[j] << "|" << status[j] << endl;
+                    app << tasks[j] << "|" << users[j] << "|" << assignee[j] << "|" << priorities[j] << "|" << tid[j] << "|" << status[j] << "|" << catchcreate[j] << " " << catchttl[j] << endl;
                 }
             }
             for (int j = 0; j < i; j++)
             {
                 if (priorities[j] == 'L')
                 {
-                    app << tasks[j] << "|" << users[j] << "|" << assignee[j] << "|" << priorities[j] << "|" << tid[j] << "|" << status[j] << endl;
-                }
+                    app << tasks[j] << "|" << users[j] << "|" << assignee[j] << "|" << priorities[j] << "|" << tid[j] << "|" << status[j] << "|" << catchcreate[j] << " " << catchttl[j] << endl;
             }
+        }
         }
     }
     bool displayTask(string emp_id, string type = "assign")
     {
+        ////CHECKPOINT
+        /////CHECKPOINT
+        ////CHECKPOINT
+        Expired();
         if (type == "assign")
             cout << " ------------------- TASKS ----------------------\n";
         char task[50], user[5], assignee[5], status[15], priority[2], tid[5], trash[70];
+        time_t catchcreate;
+        int ttl;
         bool hastask = false;
         ifstream note;
         note.open("tasks.txt");
@@ -470,10 +545,11 @@ public:
                 note.getline(assignee, 5, '|');
                 note.getline(priority, 2, '|');
                 note.getline(tid, 5, '|');
-                note.getline(status, 15, '\n');
+                note.getline(status, 15, '|');
+                note >> catchcreate;
+                note >> ttl;
                 cout << "Task " << tid << " : " << task << endl;
-                cout << "Assigned by : " << assignee << "    Priority: " << priority << "     Status: " << status << endl
-                     << endl;
+                cout << "Assigned by : " << assignee << "    Priority: " << priority << "     Status: " << status << endl << endl;
             }
             else
             {
@@ -497,13 +573,15 @@ public:
     void delegateTask(string emp_id)
     {
         char takeID[5], giveID[5], specificID[5];
+        time_t catchcreate[10];
+        int catchttl[10];
         cout << "Enter the ID of Role you want to delegate the task FROM : ";
         cin.ignore();
         cin.getline(takeID, 5, '\n');
-       
+
         cout << "Enter the ID of Role you want to delegate task TO : ";
         cin.getline(giveID, 5, '\n');
-          
+
         cout << "-------------- CHOOSE THE TASK ID TO BE DELEGATED TO OTHER USER -------------\n";
         if (displayTask(takeID, "display"))
         {
@@ -520,7 +598,9 @@ public:
                 note >> priorities[i];
                 note.getline(tid[i], 5, '|');
                 note.getline(tid[i], 5, '|');
-                note.getline(status[i], 15, '\n');
+                note.getline(status[i], 15, '|');
+                note >> catchcreate[i];
+                note >> catchttl[i];
                 i++;
             }
             note.close();
@@ -538,10 +618,9 @@ public:
             app.open("tasks.txt");
             for (int k = 0; k < i; k++)
             {
-                app << tasks[k] << "|" << users[k] << "|" << assignee[k] << "|" << priorities[k] << "|" << tid[k] << "|" << status[k] << endl;
+                app << tasks[k] << "|" << users[k] << "|" << assignee[k] << "|" << priorities[k] << "|" << tid[k] << "|" << status[k] << "|" << catchcreate[k] << " " << catchttl[k] << endl;
             }
             cout << "Task Delegated!" << endl;
-            report.addscore(emp_id, 5);
         }
         else
         {
@@ -582,48 +661,55 @@ public:
     }
 };
 
-
-class Login {
+class Login
+{
     string username;
     string input_pw;
     string hashed_input_pw;
     bool success;
 
 public:
- Login(){}
-    Login(string user, string pw) : username(user), input_pw(pw), success(false) {
+    Login() {}
+    Login(string user, string pw) : username(user), input_pw(pw), success(false)
+    {
         hashed_input_pw = hashpw(pw);
         checkCredentials();
     }
 
     bool isSuccess() const { return success; }
-    
-    string generate_otp() {
-    srand(time(0));
-    string otp = "";
-    for (int i = 0; i < 4; i++) {
-        otp += ('0' + rand() % 10); // generates random numbers like 2314
-    }
-    return otp;
-    }
-   string hashpw(string pw) {
-    pw += "x7#";  // Append extra characters (salt)
-    string encrypted = "";
 
-    for (int i = 0; i < pw.length(); i++) {
-        encrypted += pw[i] + 2;  // Shift each character by 2
+    string generate_otp()
+    {
+        srand(time(0));
+        string otp = "";
+        for (int i = 0; i < 4; i++)
+        {
+            otp += ('0' + rand() % 10); // generates random numbers like 2314
+        }
+        return otp;
+    }
+    string hashpw(string pw)
+    {
+        pw += "x7#"; // Append extra characters (salt)
+        string encrypted = "";
+
+        for (int i = 0; i < pw.length(); i++)
+        {
+            encrypted += pw[i] + 2; // Shift each character by 2
+        }
+
+        return encrypted;
     }
 
-    return encrypted;
-}
-
-    
- void checkCredentials() {
+    void checkCredentials()
+    {
         ifstream fin("users.txt");
         string user, hash_pw;
 
-        while (fin >> user >> hash_pw) {
-            if (user == username && hash_pw == hashed_input_pw) {
+        while (fin >> user >> hash_pw)
+        {
+            if (user == username && hash_pw == hashed_input_pw)
+            {
                 success = true;
                 break;
             }
@@ -634,12 +720,14 @@ public:
     }
 };
 
-
-class Anomaly {
+class Anomaly
+{
 public:
-    static void detect() {
+    static void detect()
+    {
         ifstream fin("audit.txt");
-        if (!fin) {
+        if (!fin)
+        {
             cout << "Could not open audit.txt.\n";
             return;
         }
@@ -648,7 +736,8 @@ public:
         int loginFailures = 0;
         int permissionDenials = 0;
 
-        while (getline(fin, line)) {
+        while (getline(fin, line))
+        {
             // Checks if line contains "LOGIN FAILURE"
             if (contains(line, "LOGIN FAILURE"))
                 loginFailures++;
@@ -670,20 +759,25 @@ public:
     }
 
     // function to check if a string contains a substring
-    static bool contains(string line, string word) {
+    static bool contains(string line, string word)
+    {
         int lenText = line.length();
         int lenKey = word.length();
 
-        for (int i = 0; i <= lenText - lenKey; i++) {  //to prevent incorrect comparison
+        for (int i = 0; i <= lenText - lenKey; i++)
+        { // to prevent incorrect comparison
             bool match = true;
-            for (int j = 0; j < lenKey; j++) {
-                if (line[i + j] != word[j]) {
+            for (int j = 0; j < lenKey; j++)
+            {
+                if (line[i + j] != word[j])
+                {
                     match = false;
                     break;
                 }
             }
-            if (match) return true;
+            if (match)
+                return true;
         }
         return false;
     }
-};  
+};
