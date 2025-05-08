@@ -15,8 +15,6 @@ class Director: public HigherUp{
     }
     void showmenu()
     {
-       cout << "Press 1 for assigning task, 2 for viewing task, 3 for delegating task, 4 for sending messages, 5 for recieving messages ";
-       cout << "6 to Send global messages, 7 for performance reports , 8 to exit " << endl;
     }
 };
 void directorfunc(string ID);
