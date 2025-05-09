@@ -6,8 +6,9 @@
 #include "classes.h"
 #include "executive.h"
 using namespace std;
-class Director: public HigherUp{
-    public:
+class Director : public HigherUp
+{
+public:
     Director(string id)
     {
         emp_id = id;
