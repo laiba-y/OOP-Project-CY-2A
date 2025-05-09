@@ -20,17 +20,21 @@ protected:
 public:
     Employee()
     {
+        system("clear");
         task = new Task;
         msg = new Message;
-        cout << "--------------------------------- GLOBAL MESSAGES FROM HIGHER UPS --------------------------------------\n\n";
+        cout << BMAGENTA;
+    cout << "╔══════════════════════════════════════════════════════════════════════════════════════════╗\n";
+    cout << "║                       GLOBAL MESSAGES FROM HIGHER UPS                                    ║\n";
+    cout << "╚══════════════════════════════════════════════════════════════════════════════════════════╝\n";
+    cout << RESET;
         ifstream notif;
         notif.open("global.txt");
         string message;
         while (getline(notif, message, '\n'))
         {
-            cout << message << endl;
+            cout << BCYAN << message << endl << RESET;
         }
-        cout << " ********************************************************************************" << endl << endl;
     }
     bool IDexists(string emp_id)
     {
@@ -51,12 +55,19 @@ public:
     }
     void showperformance(string emp_id)
     {
-        cout << ".................................... REPORT " << emp_id << " ...................................." << endl << endl;
-        
-        cout << "PERFORMANCE CRITERIA :  \n1) COMPLETING TASKS +10           2) EXPIRING TASK -10             3) SENDING MESSAGE +2\n";
-        cout << "FOR HIGHER UPS:           4) SEND GLOBAL NOTIFICATION +3    5) HIRE A NEW USER +20       " << endl;
+        cout << BMAGENTA << "\n╔══════════════════════════════════════════════════════════════════════╗\n";
+    cout << "║                     PERFORMANCE REPORT - " << emp_id << "                          ║\n";
+    cout << "╚══════════════════════════════════════════════════════════════════════╝\n" << RESET;
+
+    cout << BCYAN<< "\n╔══════════════════════════════════════════════════════════════════════╗\n";
+    cout << "║                  PERFORMANCE CRITERIA (SCORE SYSTEM)                 ║\n";
+    cout << "╠══════════════════════════════════════════════════════════════════════╣\n";
+    cout << "║ 1) Completing Tasks:        +10      | 2) Expired Task:        -10   ║\n";
+    cout << "║ 3) Sending Message:         +2       | 4) Global Notification: +3    ║\n";
+    cout << "║ 5) Hire New User:           +20                                      ║\n";
+    cout << "╚══════════════════════════════════════════════════════════════════════╝\n" << RESET;
         report.setid(emp_id);
-        cout << "DEFAULT SCORE : 100" << endl;
+        cout << YELLOW << "DEFAULT SCORE : 100" << endl << RESET;
         cout << report ;
         
     }
@@ -66,27 +77,33 @@ public:
         string msgtype;
         string T_id;
         int Tgrade;
-        cout << "Enter grade of recipient (1-4): ";
+        cout << BCYAN;
+    cout << "╔════════════════════════════════════════════════════════════════════════════════════╗\n";
+    cout << "║                                  ACCESS STOP                                       ║\n";
+    cout << "╚════════════════════════════════════════════════════════════════════════════════════╝\n";
+    cout << RESET;
+    cout << "\n";
+        cout << YELLOW << "Enter grade of recipient (1-4): ";
         cin >> Tgrade;
         while (Tgrade < 1 or Tgrade > 4)
         {
-            cout << "Invalid grade, try again in the range : ";
+            cout << RESET << RED << "Invalid grade, try again in the range : ";
             cin >> Tgrade;
         }
-        cout << "Enter ID of recipient: ";
+        cout << YELLOW << "Enter ID of recipient: " << RESET;
         cin.ignore();
         getline(cin, T_id);
         if (!IDexists(T_id))
         {
-            cout << "ID does not exist, please choose another user: ";
+            cout << RED << "ID does not exist, please choose another user: " << RESET;
             getline(cin, T_id);
         }
-        cout << "Press \n1. PRIVATE  \n2. INFO \n3. ALERT \n4. WARNING \nENTER HERE: ";
+        cout << YELLOW << "Press \n1. PRIVATE  \n2. INFO \n3. ALERT \n4. WARNING \nENTER HERE: " << RESET;
         cin >> msgtostring;
 
         while (msgtostring < 1 or msgtostring > 4)
         {
-            cout << "Invalid Option, Try again: ";
+            cout << RED << "Invalid Option, Try again: " << RESET;
             cin >> msgtostring;
         }
 
@@ -101,11 +118,20 @@ public:
 
         if (allowed.canSendMessage(grade, Tgrade, msgtype)) //checking permission
         {
+            cout << GREEN;
+    cout << "╔════════════════════════════════════════════════════════════════════════════════════╗\n";
+    cout << "║                                  ACCESS PERMITTED                                  ║\n";
+    cout << "╚════════════════════════════════════════════════════════════════════════════════════╝\n";
+    cout << RESET;
             msg->sendmsg(emp_id, T_id, msgtype);
         }
         else
         {
-            cout << "Permission denied! " << endl;
+            cout << RED;
+            cout << "╔════════════════════════════════════════════════════════════════════════════════════╗\n";
+            cout << "║                                  ACCESS DENIED                                     ║\n";
+            cout << "╚════════════════════════════════════════════════════════════════════════════════════╝\n";
+            cout << RESET;
         }
     }
     void receivemsg()
@@ -121,21 +147,33 @@ public:
     {
         string T_ID;
         int target;
-        cout << "Enter the grade of ASSIGNEE (1 - 4): ";
+        cout << BCYAN;
+        cout << "╔════════════════════════════════════════════════════════════════════════════════════╗\n";
+        cout << "║                                  ACCESS STOP                                       ║\n";
+        cout << "╚════════════════════════════════════════════════════════════════════════════════════╝\n";
+        cout << RESET;
+        cout << "\n";
+        cout << YELLOW << "Enter the grade of ASSIGNEE (1 - 4): ";
         cin >> target;
         while (target < 1 or target > 4)
         {
-            cout << "Grade doesnt exist, Try again: ";
+            cout << RESET << RED << "Grade doesnt exist, Try again: ";
             cin >> target;
         }
         if (allowed.can_assign(grade, target))
         {
-            cout << "Access permitted!\nEnter the ASSIGNEE ID: ";
+            
+            cout << GREEN;
+    cout << "╔════════════════════════════════════════════════════════════════════════════════════╗\n";
+    cout << "║                                  ACCESS PERMITTED                                  ║\n";
+    cout << "╚════════════════════════════════════════════════════════════════════════════════════╝\n";
+    cout << RESET;
+            cout << RESET << YELLOW << "Enter the ASSIGNEE ID: ";
             cin.ignore();
             std::getline(cin, T_ID);
             if (!IDexists(T_ID))
         {
-            cout << "ID does not exist, please choose another user: ";
+            cout << RESET << RED << "ID does not exist, please choose another user: ";
             getline(cin, T_ID);
         }
             if (!task)
@@ -144,7 +182,11 @@ public:
         }
         else
         {
-            cout << "Permission denied! " << endl;
+            cout << RED;
+            cout << "╔════════════════════════════════════════════════════════════════════════════════════╗\n";
+            cout << "║                                  ACCESS DENIED                                     ║\n";
+            cout << "╚════════════════════════════════════════════════════════════════════════════════════╝\n";
+            cout << RESET;
         }
     }
     void delegate_task()
