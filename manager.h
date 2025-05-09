@@ -15,10 +15,27 @@ class Manager : public Employee{
     }
     void showMenu()
     {
-        cout << "-------------------------------------------------- DASH BOARD -------------------------------------------------------------";
-        cout << "\nPress \n1. ASSIGN TASKS \n2. VIEW TASKS \n3. DELEGATE TASKS \n4. SEND MESSAGES \n5. VIEW MESSAGES \n6. CHECK PERFORMANCE REPORT \n7. EXIT : \n"; 
-        // cout << "------------------------ MENU --------------------------------";
-        // cout << "\nPRess 1 for assigning tasks, 2 for viewing tasks, 3 for delegating tasks, 4 for sending messages, 5 for recieving messages, 6 to check Perfomance Reports, 7 to Exit : \n";  // I am making a very rough sa main right now, jab sab hojayega phir I will add decorations and shit
+       
+        cout << BMAGENTA;
+        cout << "╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\n";
+        cout << "║                                        DASH BOARD                                                  ║\n";
+        cout << "╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\n";
+        cout << RESET;
+    
+        // Options Box
+        cout << BCYAN;
+        cout << "╔════════════════════════════════════════════════════════════╗\n";
+        cout << "║ Press                                                      ║\n";
+        cout << "║ 1. ASSIGN TASKS                                            ║\n";
+        cout << "║ 2. VIEW TASKS                                              ║\n";
+        cout << "║ 3. DELEGATE TASKS                                          ║\n";
+        cout << "║ 4. SEND MESSAGES                                           ║\n";
+        cout << "║ 5. VIEW MESSAGES                                           ║\n";
+        cout << "║ 6. CHECK PERFORMANCE REPORT                                ║\n";
+        cout << "║ 7. EXIT                                                    ║\n";
+        cout << "╚════════════════════════════════════════════════════════════╝\n";
+        cout << RESET;
+        cout << YELLOW << "ENTER HERE : " << RESET;
     }
 };
 void managerfunc(string ID);
