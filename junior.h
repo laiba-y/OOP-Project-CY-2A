@@ -15,8 +15,25 @@ public:
     }
     void showMenu()
     {
-        cout << "-------------------------------------------------- DASH BOARD -------------------------------------------------------------";
-        cout << "\nPress \n1. VIEW TASKS \n2. DELEGATE TASKS \n3. SEND MESSAGE \n4. VIEW MESSAGES \n5. VIEW YOUR PERFORMANCE REPORT \n6. EXIT : \n";
+        cout << BMAGENTA;
+    cout << "╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\n";
+    cout << "║                                        DASH BOARD                                                  ║\n";
+    cout << "╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\n";
+    cout << RESET;
+
+    // Options Box
+    cout << BCYAN;
+    cout << "╔════════════════════════════════════════════════════╗\n";
+    cout << "║ Press                                              ║\n";
+    cout << "║ 1. VIEW TASKS                                      ║\n";
+    cout << "║ 2. DELEGATE TASKS                                  ║\n";
+    cout << "║ 3. SEND MESSAGE                                    ║\n";
+    cout << "║ 4. VIEW MESSAGES                                   ║\n";
+    cout << "║ 5. VIEW YOUR PERFORMANCE REPORT                    ║\n";
+    cout << "║ 6. EXIT                                            ║\n";
+    cout << "╚════════════════════════════════════════════════════╝\n";
+    cout << RESET;
+    cout << YELLOW << "ENTER HERE : " << RESET;
     }
 };
 void juniorfunc(string ID);
