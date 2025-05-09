@@ -7,15 +7,16 @@ void executivefunc(string ID)
     Executive Ex(ID);
     while (running)
     {
+
     Ex.showMenu(); //showing menu
     int facility;
     cin >> facility;
-    while (facility < 1 or facility > 9) //change numbers according to increase in facilities
+    system("clear");
+    while (facility < 1 or facility > 11) //change numbers according to increase in facilities
     {
         cout << "Option not available, try again: ";
         cin >> facility;
     }
-    while (running)
     
     if (facility == 1)
     {
@@ -48,26 +49,52 @@ void executivefunc(string ID)
         getline(cin, id);
         Ex.showperformance(id);
     }
-    else if (facility == 9)
+    else if (facility == 11)
     {
-        cout << "------------------ LOGGING OUT ---------------------------";
+        cout << GREEN;
+        cout << "╔════════════════════════════════════════════════════════════╗\n";
+        cout << "║                       LOGGING OUT...                       ║\n";
+        cout << "╚════════════════════════════════════════════════════════════╝\n";
+        cout << RESET;
         return;
     }
-    else
+    else if (facility == 8)
     {
         Ex.adduser(ID);
     }
+    else if (facility == 9)
+    {
+        Ex.showaudit();
+    }
+    else
+    {
+        Ex.showanomaly();
+    }
     int option;
-        cout << "Press \n1) HOME PAGE \n2) LOG OUT \nENTER HERE: ";
-        cin >> option;
+    cout << BCYAN;
+    cout << "╔══════════════════════════════════════╗\n";
+    cout << "║              PRESS                   ║\n";
+    cout << "╠══════════════════════════════════════╣\n";
+    cout << "║ 1) DASH BOARD                        ║\n";
+    cout << "║ 2) LOG OUT                           ║\n";
+    cout << "╚══════════════════════════════════════╝\n";
+    cout << RESET;
 
-        while (option < 3 || option > 4) {
+    cout << YELLOW << "ENTER HERE: ";
+        cin >> option;
+cout << RESET;
+
+        while (option < 1 || option > 2) {
             cout << "Invalid option, Try again: ";
             cin >> option;
         }
 
-        if (option == 4) {
-            cout << "#################################### LOGGING OUT #######################################" << endl;
+        if (option == 2) {
+            cout << GREEN;
+            cout << "╔════════════════════════════════════════════════════════════╗\n";
+            cout << "║                       LOGGING OUT...                       ║\n";
+            cout << "╚════════════════════════════════════════════════════════════╝\n";
+            cout << RESET;
             running = false;
         }
 }
