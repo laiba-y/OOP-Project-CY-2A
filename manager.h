@@ -4,24 +4,24 @@
 #include <fstream>
 #include "employee.h"
 using namespace std;
-class Manager : public Employee{
-    private:
-
-    public:
+class Manager : public Employee
+{
+private:
+public:
     Manager(string id)
     {
         emp_id = id;
-        grade = 2; //clearance level
+        grade = 2; // clearance level
     }
     void showMenu()
     {
-       
+
         cout << BMAGENTA;
         cout << "╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\n";
         cout << "║                                        DASH BOARD                                                  ║\n";
         cout << "╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\n";
         cout << RESET;
-    
+
         // Options Box
         cout << BCYAN;
         cout << "╔════════════════════════════════════════════════════════════╗\n";
