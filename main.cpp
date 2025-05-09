@@ -25,27 +25,24 @@ int main()
 {
 
 //J6: pass123
-//M2: password2
-//D1: nopw123
-//E1: pw123
+//M2: pass123
+//D1: pass123
+//E1: pass123
     
     system ("clear");
-    // 1) Prompt for credentials
 
     int role;
-    // cout << "========================================= OSIM HOME PAGE ==========================================" << endl << endl;
-    // cout << "Press \n1 for JUNIOR\n2 for MANAGER\n3 for DIRECTOR\n4 for EXECUTIVE\n5 for EXIT\nENTER HERE : ";
     cout << "\n";
-    cout << YELLOW << "╔════════════════════════════════════╗\n"<< RESET;
-    cout << YELLOW <<"║          ROLE SELECTION MENU       ║\n"<< RESET;
-    cout << YELLOW <<"╠════════════════════════════════════╣\n"<< RESET;
-    cout << YELLOW <<"║  1. Junior                         ║\n"<< RESET;
-    cout << YELLOW <<"║  2. Manager                        ║\n"<< RESET;
-    cout << YELLOW <<"║  3. Director                       ║\n"<< RESET;
-    cout << YELLOW <<"║  4. Executive                      ║\n"<< RESET;
-    cout << YELLOW <<"║  5. Exit                           ║\n"<< RESET;
-    cout << YELLOW <<"╚════════════════════════════════════╝\n"<< RESET;
-    cout << BBLUE <<"Enter your choice (1–5): ";
+    cout << BMAGENTA<< "╔════════════════════════════════════╗\n";
+    cout << "║          ROLE SELECTION MENU       ║\n" ;
+    cout << "╠════════════════════════════════════╣\n" ;
+    cout << "║  1. Junior                         ║\n" ;
+    cout << "║  2. Manager                        ║\n";
+    cout << "║  3. Director                       ║\n";
+    cout << "║  4. Executive                      ║\n";
+    cout << "║  5. Exit                           ║\n";
+    cout << "╚════════════════════════════════════╝\n" << RESET;
+    cout << YELLOW <<"Enter your choice (1–5): ";
     cin >> role;
     cin.ignore();
     while (role < 1 or role > 5)
@@ -58,37 +55,47 @@ int main()
 cout <<      BMAGENTA << "║        LOGIN PANEL       ║\n";
 cout <<       BMAGENTA << "╚══════════════════════════╝\n";
       string username, password;
-    cout << BBLUE << "Enter Username: ";
+      int i = 0;
+      for (; i < 3; i++)
+      {
+    cout << YELLOW << "Enter Username: ";
     getline(cin, username);
-    cout << BBLUE << "Enter Password: "<< RESET;
+    cout << YELLOW << "Enter Password: ";
     getline(cin, password);
 
     // 2) Check user/pass
     Login user(username, password);
     if (!user.isSuccess()) {
-        cout << "Login failed! Exiting...\n";
+        cout << RESET << RED << "Login failed! " << 3 - (i+1) << " MORE TRIES ...\n" << RESET;
         Audit::logAction(username, "LOGIN", "FAILURE"); // adding to audit
+    }
+    else
+    break;
+    }
+    if (i == 3)
+    {cout << RESET << RED<< "\n╔══════════════════════════╗\n";
+cout <<                       "║        LOGIN FAILED      ║\n";
+cout <<                       "╚══════════════════════════╝\n" << RESET;
         return 0;
     }
-
+    Login user(username, password);
     // 3) Generate OTP & record gen time
     const int otp_ttl = 60;  // OTP valid for 1 minute
     string otp = user.generate_otp();
     time_t otp_gen_time = time(0);
 
-    cout << "\n╔══════════════════════════╗\n";
+    cout << RESET << BMAGENTA << "\n╔══════════════════════════╗\n";
     cout <<   "║    OTP : " << otp << "            ║\n";
-cout <<       "╚══════════════════════════╝\n";
-    cout << BBLUE << "Enter OTP: "<< RESET;
+cout <<       "╚══════════════════════════╝\n" << RESET;
+    cout << YELLOW << "Enter OTP: ";
     string realotp;
     getline(cin, realotp);
 
     // 4) Verify OTP and TTL
-    
     if (realotp == otp && !(Time_Manager::checkExpiry(otp_gen_time, otp_ttl))) {
-        cout << "\n********* Login fully successful. ***********\n\n";
+        cout << RESET << GREEN << "\nLogin fully successful\n\n" << RESET;
     } else {
-        cout << "Incorrect or expired OTP! ACCESS DENIED.\n";
+        cout << RESET << RED << "Incorrect or expired OTP! ACCESS DENIED.\n" << RESET;
         Audit::logAction(username, "OTP_VERIFY", "FAILURE");
         return 0;
     }
@@ -111,7 +118,11 @@ cout <<       "╚════════════════════�
     }
     else
     {
-        cout << "#################################### LOGGING OUT #######################################" << endl;
+        cout << GREEN;
+    cout << "╔════════════════════════════════════════════════════════════╗\n";
+    cout << "║                       LOGGING OUT...                       ║\n";
+    cout << "╚════════════════════════════════════════════════════════════╝\n";
+    cout << RESET;
     }
 
 //      cout << "\n====================\nCLASS TEST CASES BEGIN\n====================\n";
