@@ -10,10 +10,32 @@ class HigherUp : public Employee{
     Global global;
     Login log;
     Tracker report;
+    Audit audit;
+    Anomaly anom;
     public: 
     HigherUp()
     {
 
+    }
+    void showaudit()
+    {
+        cout << BMAGENTA;
+    cout << "╔════════════════════════════════════════════════════════════╗\n";
+    cout << "║                       AUDIT REPORTS                        ║\n";
+    cout << "╚════════════════════════════════════════════════════════════╝\n";
+    cout << RESET;
+   cout << audit;
+        return;
+    }
+    void showanomaly()
+    {
+         cout << BMAGENTA;
+    cout << "╔════════════════════════════════════════════════════════════╗\n";
+    cout << "║                       ANOMALY REPORTS                      ║\n";
+    cout << "╚════════════════════════════════════════════════════════════╝\n";
+    cout << RESET;
+        cout << anom;
+        return;
     }
     void adduser(string emp_id)
     {
@@ -38,17 +60,49 @@ class HigherUp : public Employee{
     }
     void showMenu()
     {
-        cout << "-------------------------------------------------- DASH BOARD -------------------------------------------------------------";
-        cout << "\nPress \n1. ASSIGN TASKS \n2. VIEW TASKS \n3. DELEGATE TASK \n4. SEND MESSAGES \n5. VIEW MESSAGES \n6. SEND GLOBAL NOTIFICATION \n7. VIEW PERFORMANCE REPORTS \n8. HIRE A NEW USER \n9. EXIT \nENTER HERE: \n"; 
-    //     cout << "Press 1 for assigning task, 2 for viewing task, 3 for delegating task, 4 for sending messages, 5 for recieving messages ";
-    //    cout << "6 to Send global messages, 7 for performance reports , 8 to Hire a user, 9 to Exit " << endl;
+        cout << BMAGENTA;
+        cout << "╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗\n";
+        cout << "║                                                 DASH BOARD                                                       ║\n";
+        cout << "╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝\n";
+        cout << RESET;
+    
+        // Menu Options
+        cout << BCYAN;
+        cout << "╔════════════════════════════════════════════════════════════════════════╗\n";
+        cout << "║ Press                                                                  ║\n";
+        cout << "║ 1. ASSIGN TASKS                                                        ║\n";
+        cout << "║ 2. VIEW TASKS                                                          ║\n";
+        cout << "║ 3. DELEGATE TASK                                                       ║\n";
+        cout << "║ 4. SEND MESSAGES                                                       ║\n";
+        cout << "║ 5. VIEW MESSAGES                                                       ║\n";
+        cout << "║ 6. SEND GLOBAL NOTIFICATION                                            ║\n";
+        cout << "║ 7. VIEW PERFORMANCE REPORTS                                            ║\n";
+        cout << "║ 8. HIRE A NEW USER                                                     ║\n";
+        cout << "║ 9. VIEW AUDIT REPORTS                                                  ║\n";
+        cout << "║ 10.VIEW ANOMALY REPORTS                                                ║\n";
+        cout << "║ 11.EXIT                                                                ║\n";
+        cout << "╚════════════════════════════════════════════════════════════════════════╝\n";
+        cout << RESET;
+    
+    cout << YELLOW << "ENTER HERE : " << RESET;
     }
     void sendGlobalMsg(string emp_id)
     {
         report.setid(emp_id);
         report += 3;
         int msgtype;
-        cout << "Press \n1. ALERT  \n2. EMERGENCY \n3. WARNING \n4. EXIT \nENTER HERE : ";
+       cout << BMAGENTA;
+    cout << "╔════════════════════════════════════════╗\n";
+    cout << "║" << BCYAN << "              Press                     " << BMAGENTA << "║\n";
+    cout << "╠════════════════════════════════════════╣\n";
+    cout << "║ " << BCYAN << "1. ALERT                               "     << BMAGENTA << "║\n";
+    cout << "║ " << BCYAN << "2. EMERGENCY                           " << BMAGENTA << "║\n";
+    cout << "║ " << BCYAN << "3. WARNING                             "    << BMAGENTA << "║\n";
+    cout << "║ " << BCYAN << "4. EXIT                                " << BMAGENTA << "║\n";
+    cout << "╚════════════════════════════════════════╝\n";
+    cout << RESET;
+
+    cout << YELLOW << "ENTER HERE : " << RESET;
         cin >> msgtype;
         cin.ignore();
         while (msgtype < 1 or msgtype > 4)
