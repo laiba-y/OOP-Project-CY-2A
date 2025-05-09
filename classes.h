@@ -37,9 +37,10 @@ private:
 public:
     void sendAlert()
     {
-        cout << BCYAN"\n╔══════════════════════════════╗\n";
+        cout << BCYAN "\n╔══════════════════════════════╗\n";
         cout << "║         SEND ALERT           ║\n";
-        cout << "╚══════════════════════════════╝\n" << RESET;
+        cout << "╚══════════════════════════════╝\n"
+             << RESET;
         cout << YELLOW << "Enter message here: " << RESET;
         getline(cin, alert);
         fstream o;
@@ -48,12 +49,14 @@ public:
         o.close();
         cout << GREEN << "Alert ADDED!" << endl
              << RESET;
+             
     }
     void sendEmergency()
     {
         cout << BCYAN << "\n╔══════════════════════════════╗\n";
         cout << "║         SEND EMERGENCY       ║\n";
-        cout << "╚══════════════════════════════╝\n" << RESET;
+        cout << "╚══════════════════════════════╝\n"
+             << RESET;
         cout << YELLOW << "Enter message here: " << RESET;
         getline(cin, emergency);
         fstream o;
@@ -67,7 +70,8 @@ public:
     {
         cout << BCYAN << "\n╔══════════════════════════════╗\n";
         cout << "║         SEND WARNING         ║\n";
-        cout << "╚══════════════════════════════╝\n" << RESET;
+        cout << "╚══════════════════════════════╝\n"
+             << RESET;
         cout << YELLOW << "Enter message here: " << RESET;
         getline(cin, warning);
         fstream o;
@@ -116,14 +120,16 @@ public:
                 score = ach[j] + add;
                 ach[j] += add; // Add the achievement score
                 cout << RESET << GREEN << "\n╔══════════════════════════════╗\n";
-                                    cout << "║        SCORE UPDATED         ║\n";
-                                    cout << "╚══════════════════════════════╝\n" << RESET;
+                cout << "║        SCORE UPDATED         ║\n";
+                cout << "╚══════════════════════════════╝\n"
+                     << RESET;
                 break;
             }
         }
         scores.close();
         if (!found)
-            cout << RESET << RED << "ID not found. Score unchanged." << endl << RESET;
+            cout << RESET << RED << "ID not found. Score unchanged." << endl
+                 << RESET;
         else
         {
             ofstream app;
@@ -140,7 +146,7 @@ public:
     {
         string ID[10];
         int ach[10];
-        ifstream scores("reports.txt");
+        fstream scores("reports.txt", ios::in);
         if (!scores)
         {
             cout << "Error opening reports.txt" << endl;
@@ -154,7 +160,7 @@ public:
         }
 
         scores.close();
-
+        scores.open("reports.txt", ios::out);
         for (int j = 0; j < i; j++)
         {
             if (ID[j] == findID)
@@ -166,10 +172,10 @@ public:
                     score = 0;
                     ach[j] = 0;
                 }
-                return;
             }
+            scores << ID[j] << " " << ach[j] << endl;
         }
-
+        
         cout << "ID not found. Score unchanged." << endl;
     }
     void setid(string emp_id)
@@ -186,11 +192,14 @@ public:
         int score;
         ifstream in;
         in.open("reports.txt");
-        while (getline(in, checkID, ' ') && (in >> score))
+        while (getline(in, checkID, ' '))
         {
+            in >> score;
+            in.get();
             if (checkID == report.id)
             {
-                cout << GREEN << "OBTAINED SCORE  : " << score << endl << RESET;
+                cout << GREEN << "OBTAINED SCORE  : " << score << endl
+                     << RESET;
             }
         }
         return o;
@@ -227,7 +236,8 @@ public:
                 }
                 cout << RESET << GREEN << "\n╔══════════════════════════════╗\n";
                 cout << "║        SCORE UPDATED         ║\n";
-                cout << "╚══════════════════════════════╝\n" << RESET;
+                cout << "╚══════════════════════════════╝\n"
+                     << RESET;
                 return;
             }
         }
@@ -259,14 +269,17 @@ public:
         fout << "[" << timestamp << "] " << username << " " << action << " " << status << "\n";
         fout.close();
     }
-   friend std::ostream& operator<<(std::ostream& o, const Audit& other) {
-    std::ifstream in("audit.txt");
-    std::string line;
-    while (std::getline(in, line, '\n')) {
-        o << WHITE << line << '\n' << RESET;
+    friend std::ostream &operator<<(std::ostream &o, const Audit &other)
+    {
+        std::ifstream in("audit.txt");
+        std::string line;
+        while (std::getline(in, line, '\n'))
+        {
+            o << CYAN << line << '\n'
+              << RESET;
+        }
+        return o;
     }
-    return o;
-}
 };
 // audit.txt foramt
 //[Tue May 06 00:51:29 2025] ali LOGIN FAILURE
@@ -298,9 +311,10 @@ public:
     {
         string msg;
         cout << BCYAN << "\n╔══════════════════════════════╗\n";
-cout << "║         SEND MESSAGE         ║\n";
-cout << "╚══════════════════════════════╝\n" << RESET;
-cout << YELLOW << "Enter the message: ";
+        cout << "║         SEND MESSAGE         ║\n";
+        cout << "╚══════════════════════════════╝\n"
+             << RESET;
+        cout << YELLOW << "Enter the message: ";
         cin.ignore();
         getline(cin, msg);
         if (msgtype == "PRIVATE")
@@ -309,13 +323,11 @@ cout << YELLOW << "Enter the message: ";
         fstream app;
         app.open("inbox.txt", ios::app);
         app << msg << "|" << T_id << "|" << emp_id << "|" << msgtype << "|" << "Unread" << endl;
-        cout << GREEN << "Message Sent! " << endl << RESET;
+        cout << GREEN << "Message Sent! " << endl
+             << RESET;
         app.close();
         report.setid(emp_id);
         report += 2;
-        cout << RESET << GREEN << "\n╔══════════════════════════════╗\n";
-        cout << "║        SCORE UPDATED         ║\n";
-        cout << "╚══════════════════════════════╝\n" << RESET;
 
         Audit::logAction(emp_id, "MESSAGE", "SENT");
     }
@@ -354,8 +366,9 @@ cout << YELLOW << "Enter the message: ";
     void receivemsg(string emp_id)
     {
         cout << BMAGENTA << "\n╔══════════════════════════════════════════════════╗\n";
-cout << "║                    INBOX                         ║\n";
-cout << "╚══════════════════════════════════════════════════╝\n\n" << RESET;
+        cout << "║                    INBOX                         ║\n";
+        cout << "╚══════════════════════════════════════════════════╝\n\n"
+             << RESET;
         ifstream in("inbox.txt");
         if (!in)
         {
@@ -382,12 +395,12 @@ cout << "╚══════════════════════�
                     message = decrypt(message);
                 }
                 std::cout << BCYAN << "╔══════════════════════════════════╗\n";
-                cout << "║ Message:  " << message << "\n";
-                cout << "║ Sender:   " << sender << "\n";
-                cout << "║ Type:     " << msgType << "\n";
-                cout << "║ Status:   " << status << "\n";
-                cout << "╚══════════════════════════════════╝\n\n" << RESET;
-                
+                cout << "║ Message:  " << message << "║\n";
+                cout << "║ Sender:   " << sender << "║\n";
+                cout << "║ Type:     " << msgType << "║\n";
+                cout << "║ Status:   " << status << "║\n";
+                cout << "╚══════════════════════════════════╝\n\n"
+                     << RESET;
             }
         }
 
@@ -430,9 +443,11 @@ public:
             getline(in, status, '|');
             in >> create;
             in >> ttl;
-            if (Time.checkExpiry(create, ttl) && status!="Expired")
+            if (Time.checkExpiry(create, ttl) && status != "Expired")
             {
+                Audit::logAction(emp, "TASK", "EXPIRED");
                 updatestatus(taskid, "Expired");
+                report.subtractscore(emp);
             }
         }
         else
@@ -517,7 +532,7 @@ public:
         cout << "║ 2. EXIT                              ║\n";
         cout << "╚══════════════════════════════════════╝\n";
         cout << RESET;
-    
+
         cout << YELLOW << "ENTER HERE: " << RESET;
         cin >> option;
         cin.ignore();
@@ -526,18 +541,20 @@ public:
             cout << YELLOW << "Enter task ID: ";
             cin.getline(taskComp, 5, '\n');
             updatestatus(taskComp, "In Progress");
-            cout << YELLOW << "Press 'Y' to complete task : " ;
+            cout << YELLOW << "Press 'Y' to complete task : ";
             cin >> test;
             if (test == 'Y')
             {
-                cout << RESET << GREEN << "^^^^^^^^TASK COMPLETED^^^^^^^^^^^^" << endl << RESET;
+                cout << RESET << GREEN << "^^^^^^^^TASK COMPLETED^^^^^^^^^^^^" << endl
+                     << RESET;
                 report.addscore(emp_id);
                 updatestatus(taskComp, "Completed");
                 Audit::logAction(emp_id, "TASK", "COMPLETED");
             }
             else
             {
-                cout << RESET << RED << "Task failed! Try process again... " << endl << RESET;
+                cout << RESET << RED << "Task failed! Try process again... " << endl
+                     << RESET;
                 report.subtractscore(emp_id);
                 updatestatus(taskComp, "In Progress");
                 Audit::logAction(emp_id, "TASK", "IN PROGRESS");
@@ -547,8 +564,9 @@ public:
     void appendtask(string emp_id, string T_ID) // jo user task assign kar raha hai uski ID in parameter so I can note it in the file
     {
         cout << BMAGENTA << "\n╔══════════════════════════════╗\n";
-cout << "║         TASK MANAGER         ║\n";
-cout << "╚══════════════════════════════╝\n" << RESET;
+        cout << "║         TASK MANAGER         ║\n";
+        cout << "╚══════════════════════════════╝\n"
+             << RESET;
         int hour, minutes, seconds;
         // I will check yahan par ke given ID exist karti hai ya nahi by going through users.txt, first I will notice how you write in that file uske hisaab se ill make a logic for the file handling
 
@@ -583,7 +601,8 @@ cout << "╚══════════════════════�
             //  baki saare status update karna meri zimmedaari hai but you have to come up with the logic of "expired" wala because you're dealing with deadlines
             //  to once wo ban jaaye you can make a function of "isexpired" wahan se mai check kar ke expire kar dungi task ko
             cout << RESET << GREEN << "^^^^^^^^^^^^^ TASK ASSIGNED ^^^^^^^^^^^^^^^!\n"
-                 << endl << RESET;
+                 << endl
+                 << RESET;
         }
         else
         {
@@ -598,7 +617,7 @@ cout << "╚══════════════════════�
                 note.getline(users[i], 5, '|');
                 note.getline(assignee[i], 5, '|');
                 note >> priorities[i];
-                note.get();             // <— eat the '|' delimiter here
+                note.get(); // <— eat the '|' delimiter here
                 note.getline(tid[i], 5, '|');
                 note.getline(status[i], 15, '|');
                 note >> catchcreate[i];
@@ -641,16 +660,19 @@ cout << "╚══════════════════════�
             }
         }
         cout << RESET << GREEN << "^^^^^^^^^^^^^ TASK ASSIGNED ^^^^^^^^^^^^^^^!\n"
-                 << endl << RESET;
+             << endl
+             << RESET;
     }
     bool displayTask(string emp_id, string type = "assign")
     {
         Expired();
         int expirecount = 0;
-        if (type == "assign") {
+        if (type == "assign")
+        {
             cout << BMAGENTA << "\n╔══════════════════════════════════════════════════════╗\n";
             cout << "║                   ASSIGNED TASKS                     ║\n";
-            cout << "╚══════════════════════════════════════════════════════╝\n" << RESET;
+            cout << "╚══════════════════════════════════════════════════════╝\n"
+                 << RESET;
         }
         char task[50], user[5], assignee[5], status[15], priority[2], tid[5], trash[70];
         time_t catchcreate;
@@ -668,29 +690,32 @@ cout << "╚══════════════════════�
             note >> catchcreate;
             note >> ttl;
             if (strcmp(status, "Expired") == 0)
-            expirecount++;
+                expirecount++;
             if (user == emp_id and strcmp(status, "Expired") != 0)
             {
                 hastask = true;
                 cout << BCYAN;
-    cout << "╔════════════════════════════════════════════════════════╗\n";
-    cout << "║ Task ID: " << left << setw(46) << tid << "║\n";
-    cout << "╠════════════════════════════════════════════════════════╣\n";
-    cout << "║ Task:        " << left << setw(42) << task << "║\n";
-    cout << "║ Assigned by: " << left << setw(42) << assignee << "║\n";
-    cout << "║ Priority:    " << left << setw(42) << priority << "║\n";
-    cout << "║ Status:      " << left << setw(42) << status << "║\n";
-    cout << "╚════════════════════════════════════════════════════════╝\n\n";
-    cout << RESET;
+                cout << "╔════════════════════════════════════════════════════════╗\n";
+                cout << "║ Task ID: " << left << setw(46) << tid << "║\n";
+                cout << "╠════════════════════════════════════════════════════════╣\n";
+                cout << "║ Task:        " << left << setw(42) << task << "║\n";
+                cout << "║ Assigned by: " << left << setw(42) << assignee << "║\n";
+                cout << "║ Priority:    " << left << setw(42) << priority << "║\n";
+                cout << "║ Status:      " << left << setw(42) << status << "║\n";
+                cout << "║ Time:      " << left << setw(42) << ctime(&catchcreate) << "║\n";
+                cout << "╚════════════════════════════════════════════════════════╝\n\n";
+                cout << RESET;
             }
         }
         note.close();
-         cout << RED << "\n╔══════════════════════════════════════════════════════╗\n";
-            cout <<       "║            " << expirecount << "       EXPIRED TASKS                     ║\n";
-            cout <<       "╚══════════════════════════════════════════════════════╝\n" << RESET;
+        cout << RED << "\n╔══════════════════════════════════════════════════════╗\n";
+        cout << "║            " << expirecount << "       EXPIRED TASKS                     ║\n";
+        cout << "╚══════════════════════════════════════════════════════╝\n"
+             << RESET;
         if (!hastask)
         {
-            cout << RED << "⚠ NO PENDING TASKS!\n" << RESET;
+            cout << RED << "⚠ NO PENDING TASKS!\n"
+                 << RESET;
             return false;
         }
         else
@@ -710,7 +735,8 @@ cout << "╚══════════════════════�
         cout << YELLOW << "Enter the ID of Role you want to delegate task TO : " << RESET;
         cin.getline(giveID, 5, '\n');
 
-        cout << BMAGENTA << "----------------------- CHOOSE THE TASK ID TO BE DELEGATED TO OTHER USER -----------------------\n" << RESET;
+        cout << BMAGENTA << "----------------------- CHOOSE THE TASK ID TO BE DELEGATED TO OTHER USER -----------------------\n"
+             << RESET;
         if (displayTask(takeID, "display"))
         {
             cout << YELLOW << "Enter the TASK ID: ";
@@ -724,7 +750,7 @@ cout << "╚══════════════════════�
                 note.getline(users[i], 5, '|');
                 note.getline(assignee[i], 5, '|');
                 note >> priorities[i];
-                note.get();             // <— eat the '|' delimiter here
+                note.get(); // <— eat the '|' delimiter here
                 note.getline(tid[i], 5, '|');
                 note.getline(status[i], 15, '|');
                 note >> catchcreate[i];
@@ -748,7 +774,8 @@ cout << "╚══════════════════════�
             {
                 app << tasks[k] << "|" << users[k] << "|" << assignee[k] << "|" << priorities[k] << "|" << tid[k] << "|" << status[k] << "|" << catchcreate[k] << " " << catchttl[k] << endl;
             }
-            cout << RESET << GREEN << "^^^^^^^^^^^^ TASK DELEGATED ^^^^^^^^^^" << endl << RESET;
+            cout << RESET << GREEN << "^^^^^^^^^^^^ TASK DELEGATED ^^^^^^^^^^" << endl
+                 << RESET;
         }
         else
         {
@@ -875,20 +902,33 @@ public:
         {
             // Checks if line contains "LOGIN FAILURE"
             if (contains(line, "LOGIN FAILURE"))
+            {
                 loginFailures++;
-
+                if (loginFailures == 3)
+                {
+                     time_t now = time(0);
+                fstream app;
+                app.open("anomaly.txt", ios::app);
+                 app << "[" << ctime(&now) << "]"  << "3 LOGIN FAILURES DETECTED" << endl;
+                app.close();
+                }
+            }
             // Checks if line contains "DENIED"
             if (contains(line, "DENIED"))
+            {
                 permissionDenials++;
+                if (permissionDenials == 3)
+                {
+                time_t now = time(0);
+                fstream app;
+                app.open("anomaly.txt", ios::app);
+                app << "[" << ctime(&now) << "]" << "3 PERMISSION DENIALS DETECTED" << endl;
+                app.close();
+                }
+            }
         }
 
-        fin.close();
-
-        cout << "\n===== ANOMALY REPORT =====\n";
-        if (loginFailures > 3)
-            cout << "??  More than 3 failed logins detected.\n";
-        if (permissionDenials > 2)
-            cout << "??  More than 2 permission denials detected.\n";
+        fin.close(); 
         if (loginFailures <= 3 && permissionDenials <= 2)
             cout << "No suspicious activity found.\n";
     }
@@ -918,12 +958,23 @@ public:
     // Friend function to overload <<
     friend ostream &operator<<(ostream &out, const Anomaly &a)
     {
-        if (a.loginFailures > 3)
-            out << RED << "⚠️  More than 3 failed logins detected.\n" << RESET;
-        if (a.permissionDenials > 2)
-            out << RED << "⚠️  More than 2 permission denials detected.\n" << RESET;
-        if (a.loginFailures <= 3 && a.permissionDenials <= 2)
-            out << GREEN << "No suspicious activity found.\n" << RESET;
+        string line;
+        bool is = false;
+        ifstream in;
+        in.open("anomaly.txt");
+        while(getline(in, line, '\n'))
+        {
+            is = true;
+            cout << RED << line << RESET << endl;
+        }
+        if (!is)
+        {
+           cout << GREEN;
+        cout << "╔════════════════════════════════════════════════════════════╗\n";
+        cout << "║                    NO SUSPICIOUS ACTIVITY                  ║\n";
+        cout << "╚════════════════════════════════════════════════════════════╝\n";
+        cout << RESET;
+        }
         return out;
     }
 };
