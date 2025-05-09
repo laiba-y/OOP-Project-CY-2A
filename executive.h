@@ -5,58 +5,64 @@
 #include "employee.h"
 #include "classes.h"
 using namespace std;
-class HigherUp : public Employee{
-    private:
+class HigherUp : public Employee
+{
+private:
     Global global;
     Login log;
     Tracker report;
     Audit audit;
     Anomaly anom;
-    public: 
+
+public:
     HigherUp()
     {
-
     }
     void showaudit()
     {
         cout << BMAGENTA;
-    cout << "╔════════════════════════════════════════════════════════════╗\n";
-    cout << "║                       AUDIT REPORTS                        ║\n";
-    cout << "╚════════════════════════════════════════════════════════════╝\n";
-    cout << RESET;
-   cout << audit;
+        cout << "╔════════════════════════════════════════════════════════════╗\n";
+        cout << "║                       AUDIT REPORTS                        ║\n";
+        cout << "╚════════════════════════════════════════════════════════════╝\n";
+        cout << RESET;
+        cout << audit;
         return;
     }
     void showanomaly()
     {
-         cout << BMAGENTA;
-    cout << "╔════════════════════════════════════════════════════════════╗\n";
-    cout << "║                       ANOMALY REPORTS                      ║\n";
-    cout << "╚════════════════════════════════════════════════════════════╝\n";
-    cout << RESET;
+        cout << BMAGENTA;
+        cout << "╔════════════════════════════════════════════════════════════╗\n";
+        cout << "║                       ANOMALY REPORTS                      ║\n";
+        cout << "╚════════════════════════════════════════════════════════════╝\n";
+        cout << RESET;
         cout << anom;
         return;
     }
     void adduser(string emp_id)
     {
-        report.setid(emp_id);
-        report += 20;
         string ID, pw;
-        cout << "Enter ID for NEW USER: ";
+        cout << YELLOW << "Enter ID for NEW USER: " << RESET;
+        cin.ignore();
         getline(cin, ID);
         if (IDexists(ID))
         {
-            cout << "ID already exists! Choose another ID: ";
+            cout << RED << "ID already exists! Choose another ID: " << RESET;
             getline(cin, ID);
         }
-        cout << "Enter PASSWORD for NEW user: ";
+        cout << YELLOW << "Enter PASSWORD for NEW user: " << RESET;
         getline(cin, pw);
         pw = log.hashpw(pw);
         fstream add;
         add.open("users.txt", ios::app);
         add << ID << " " << pw << endl;
         add.close();
-        cout << ID << " HIRED!" << endl;
+        add.open("reports.txt", ios::app);
+        add << ID << " " << 100 << endl;
+        add.close();
+        cout << GREEN << ID << " HIRED!" << endl
+             << RESET;
+        report.setid(emp_id);
+        report += 20;
     }
     void showMenu()
     {
@@ -65,7 +71,7 @@ class HigherUp : public Employee{
         cout << "║                                                 DASH BOARD                                                       ║\n";
         cout << "╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝\n";
         cout << RESET;
-    
+
         // Menu Options
         cout << BCYAN;
         cout << "╔════════════════════════════════════════════════════════════════════════╗\n";
@@ -83,26 +89,25 @@ class HigherUp : public Employee{
         cout << "║ 11.EXIT                                                                ║\n";
         cout << "╚════════════════════════════════════════════════════════════════════════╝\n";
         cout << RESET;
-    
-    cout << YELLOW << "ENTER HERE : " << RESET;
+
+        cout << YELLOW << "ENTER HERE : " << RESET;
     }
     void sendGlobalMsg(string emp_id)
     {
-        report.setid(emp_id);
-        report += 3;
+        
         int msgtype;
-       cout << BMAGENTA;
-    cout << "╔════════════════════════════════════════╗\n";
-    cout << "║" << BCYAN << "              Press                     " << BMAGENTA << "║\n";
-    cout << "╠════════════════════════════════════════╣\n";
-    cout << "║ " << BCYAN << "1. ALERT                               "     << BMAGENTA << "║\n";
-    cout << "║ " << BCYAN << "2. EMERGENCY                           " << BMAGENTA << "║\n";
-    cout << "║ " << BCYAN << "3. WARNING                             "    << BMAGENTA << "║\n";
-    cout << "║ " << BCYAN << "4. EXIT                                " << BMAGENTA << "║\n";
-    cout << "╚════════════════════════════════════════╝\n";
-    cout << RESET;
+        cout << BMAGENTA;
+        cout << "╔════════════════════════════════════════╗\n";
+        cout << "║" << BCYAN << "              Press                     " << BMAGENTA << "║\n";
+        cout << "╠════════════════════════════════════════╣\n";
+        cout << "║ " << BCYAN << "1. ALERT                               " << BMAGENTA << "║\n";
+        cout << "║ " << BCYAN << "2. EMERGENCY                           " << BMAGENTA << "║\n";
+        cout << "║ " << BCYAN << "3. WARNING                             " << BMAGENTA << "║\n";
+        cout << "║ " << BCYAN << "4. EXIT                                " << BMAGENTA << "║\n";
+        cout << "╚════════════════════════════════════════╝\n";
+        cout << RESET;
 
-    cout << YELLOW << "ENTER HERE : " << RESET;
+        cout << YELLOW << "ENTER HERE : " << RESET;
         cin >> msgtype;
         cin.ignore();
         while (msgtype < 1 or msgtype > 4)
@@ -126,10 +131,14 @@ class HigherUp : public Employee{
         {
             return;
         }
+        report.setid(emp_id);
+        report += 3;
+
     }
 };
-class Executive: public HigherUp{
-    public:
+class Executive : public HigherUp
+{
+public:
     Executive(string id)
     {
         emp_id = id;
