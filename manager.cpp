@@ -3,12 +3,11 @@
 #include "employee.h"
 void managerfunc(string ID)
 {
-    Employee* m = new Manager(ID);
-    Manager M(ID);
+    Employee* M = new Manager(ID);
     bool running = true;
     while (running)
     {
-        m->showMenu(); // showing menu
+        M->showMenu(); // showing menu
         int facility;
         cin >> facility;
         while (facility < 1 or facility > 7) // change numbers according to increase in facilities
@@ -19,27 +18,27 @@ void managerfunc(string ID)
         system("clear");
         if (facility == 1)
         {
-            M.CreateTask();
+            M->CreateTask();
         }
         else if (facility == 2)
         {
-            M.displayTask();
+            M->displayTask();
         }
         else if (facility == 3)
         {
-            M.delegate_task();
+            M->delegate_task();
         }
         else if (facility == 4)
         {
-            M.sendmsg();
+            M->sendmsg();
         }
         else if (facility == 5)
         {
-            M.receivemsg();
+            M->receivemsg();
         }
         else if (facility == 6)
         {
-            M.showperformance(ID);
+            M->showperformance(ID);
         }
         else
         {
@@ -81,5 +80,5 @@ void managerfunc(string ID)
             running = false;
         }
     }
-    delete m;
+    delete M;
 }
