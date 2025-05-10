@@ -86,7 +86,7 @@ public:
         cout << "╚════════════════════════════════════════════════════════════════════════════════════╝\n";
         cout << RESET;
         cout << "\n";
-        cout << YELLOW << "Enter grade of recipient (1-4)" << RESET;
+        cout << YELLOW << "Enter grade of recipient (1-4)\n" << RESET;
         cout << BMAGENTA << "╠════════════════════════════════════╣\n";
         cout << "║  1. Junior                         ║\n";
         cout << "║  2. Manager                        ║\n";
@@ -94,6 +94,7 @@ public:
         cout << "║  4. Executive                      ║\n";
         cout << "╚════════════════════════════════════╝\n"
              << RESET;
+             cout << YELLOW << "Enter here: "  << RESET;
         cin >> Tgrade;
         while (Tgrade < 1 or Tgrade > 4)
         {
@@ -201,9 +202,14 @@ public:
     }
     void delegate_task()
     {
+         cout << BCYAN;
+        cout << "╔════════════════════════════════════════════════════════════════════════════════════╗\n";
+        cout << "║                                  ACCESS STOP                                       ║\n";
+        cout << "╚════════════════════════════════════════════════════════════════════════════════════╝\n";
+        cout << RESET;
         string T_ID;
         int target;
-        cout << "Enter the grade of DELEGATED ASSIGNEE :  ";
+        cout << YELLOW << "Enter the grade of DELEGATED ASSIGNEE :  " << RESET;
         cin >> target;
 
         while (target < 1 or target > 4)
@@ -214,7 +220,11 @@ public:
 
         if (allowed.can_delegate(grade, target))
         {
-            cout << "Access Permitted! \n";
+            cout << GREEN;
+            cout << "╔════════════════════════════════════════════════════════════════════════════════════╗\n";
+            cout << "║                                  ACCESS PERMITTED                                  ║\n";
+            cout << "╚════════════════════════════════════════════════════════════════════════════════════╝\n";
+            cout << RESET;
             if (!task)
             {
                 delete task;
@@ -224,7 +234,11 @@ public:
         }
         else
         {
-            cout << " PERMISSION DENIED! " << endl;
+            cout << RED;
+            cout << "╔════════════════════════════════════════════════════════════════════════════════════╗\n";
+            cout << "║                                  ACCESS DENIED                                     ║\n";
+            cout << "╚════════════════════════════════════════════════════════════════════════════════════╝\n";
+            cout << RESET;
         }
     }
     void displayTask()
