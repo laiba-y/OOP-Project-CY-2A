@@ -3,12 +3,13 @@
 
 void juniorfunc(string ID)
 {
+    Employee* j = new Junior(ID);
     Junior J(ID);
     bool running = true;
 
     while (running)
     {
-        J.showMenu();
+        j->showMenu();
         int facility;
         cin >> facility;
         system("clear");
@@ -78,4 +79,5 @@ void juniorfunc(string ID)
             running = false;
         }
     }
+    delete j;
 }
