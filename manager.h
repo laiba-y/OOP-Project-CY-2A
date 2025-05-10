@@ -13,7 +13,7 @@ public:
         emp_id = id;
         grade = 2; // clearance level
     }
-    void showMenu() override
+    void showMenu()
     {
 
         cout << BMAGENTA;
