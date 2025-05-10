@@ -3,11 +3,12 @@
 #include "employee.h"
 void managerfunc(string ID)
 {
+    Employee* m = new Manager(ID);
     Manager M(ID);
     bool running = true;
     while (running)
     {
-        M.showMenu(); // showing menu
+        m->showMenu(); // showing menu
         int facility;
         cin >> facility;
         while (facility < 1 or facility > 7) // change numbers according to increase in facilities
@@ -80,4 +81,5 @@ void managerfunc(string ID)
             running = false;
         }
     }
+    delete m;
 }
