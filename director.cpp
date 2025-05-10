@@ -3,11 +3,12 @@
 #include "employee.h"
 void directorfunc(string ID)
 {
+    Employee* d = new HigherUp();
     bool running = true;
     Director D(ID);
     while (running)
     {
-        D.showMenu(); // showing menu
+        d->showMenu(); // showing menu
         int facility;
         cin >> facility;
         system("clear");
@@ -100,4 +101,5 @@ void directorfunc(string ID)
             running = false;
         }
     }
+    delete d;
 }
