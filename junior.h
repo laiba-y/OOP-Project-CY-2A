@@ -13,7 +13,7 @@ public:
         emp_id = id;
         grade = 1;
     }
-    void showMenu()
+    void showMenu() override
     {
         cout << BMAGENTA;
         cout << "╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\n";
