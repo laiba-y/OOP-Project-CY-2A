@@ -64,7 +64,7 @@ public:
         report.setid(emp_id);
         report += 20;
     }
-    void showMenu()
+    void showMenu() override
     {
         cout << BMAGENTA;
         cout << "╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗\n";
