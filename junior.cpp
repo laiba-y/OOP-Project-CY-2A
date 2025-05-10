@@ -3,13 +3,12 @@
 
 void juniorfunc(string ID)
 {
-    Employee* j = new Junior(ID);
-    Junior J(ID);
+    Employee* J = new Junior(ID);
     bool running = true;
 
     while (running)
     {
-        j->showMenu();
+        J->showMenu();
         int facility;
         cin >> facility;
         system("clear");
@@ -21,23 +20,23 @@ void juniorfunc(string ID)
 
         if (facility == 1)
         {
-            J.displayTask();
+            J->displayTask();
         }
         else if (facility == 2)
         {
-            J.delegate_task();
+            J->delegate_task();
         }
         else if (facility == 3)
         {
-            J.sendmsg();
+            J->sendmsg();
         }
         else if (facility == 4)
         {
-            J.receivemsg();
+            J->receivemsg();
         }
         else if (facility == 5)
         {
-            J.showperformance(ID);
+            J->showperformance(ID);
         }
         else
         {
@@ -79,5 +78,5 @@ void juniorfunc(string ID)
             running = false;
         }
     }
-    delete j;
+    delete J;
 }
