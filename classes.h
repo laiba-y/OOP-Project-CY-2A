@@ -144,6 +144,7 @@ public:
 
     void subtractscore(string findID)
     {
+        bool foundid = false;
         string ID[10];
         int ach[10];
         fstream scores("reports.txt", ios::in);
@@ -156,6 +157,7 @@ public:
         int i = 0;
         while (scores >> ID[i] >> ach[i] && i < 10)
         {
+            scores.get();
             i++;
         }
 
@@ -165,6 +167,7 @@ public:
         {
             if (ID[j] == findID)
             {
+                foundid = true;
                 score = ach[j] - 10; // Subtract the achievement score
                 ach[j] -= 10;
                 if (score < 0)
@@ -175,7 +178,7 @@ public:
             }
             scores << ID[j] << " " << ach[j] << endl;
         }
-        
+        if (!foundid)
         cout << "ID not found. Score unchanged." << endl;
     }
     void setid(string emp_id)
@@ -395,10 +398,10 @@ public:
                     message = decrypt(message);
                 }
                 std::cout << BCYAN << "╔══════════════════════════════════╗\n";
-                cout << "║ Message:  " << message << "║\n";
-                cout << "║ Sender:   " << sender << "║\n";
-                cout << "║ Type:     " << msgType << "║\n";
-                cout << "║ Status:   " << status << "║\n";
+                cout << " Message:  " << message << "\n";
+                cout << " Sender:   " << sender << "\n";
+                cout << " Type:     " << msgType << "\n";
+                cout << " Status:   " << status << "\n";
                 cout << "╚══════════════════════════════════╝\n\n"
                      << RESET;
             }
@@ -514,7 +517,7 @@ public:
                 << assignee[j] << '|'
                 << priorities[j] << '|'
                 << tid[j] << '|'
-                << status[j] << '|' << catchcreate[j] << " " << ttls[j];
+                << status[j] << '|' << catchcreate[j] << " " << ttls[j] << endl;
         }
         app.close();
     }
@@ -622,6 +625,7 @@ public:
                 note.getline(status[i], 15, '|');
                 note >> catchcreate[i];
                 note >> catchttl[i];
+                note.get();//catch \n character
                 i++;
             }
             note.close();
@@ -702,7 +706,7 @@ public:
                 cout << "║ Assigned by: " << left << setw(42) << assignee << "║\n";
                 cout << "║ Priority:    " << left << setw(42) << priority << "║\n";
                 cout << "║ Status:      " << left << setw(42) << status << "║\n";
-                cout << "║ Time:      " << left << setw(42) << ctime(&catchcreate) << "║\n";
+                cout << "║ Time:      " << left << setw(42) << ctime(&catchcreate) << "\n";
                 cout << "╚════════════════════════════════════════════════════════╝\n\n";
                 cout << RESET;
             }
@@ -733,9 +737,10 @@ public:
         time_t catchcreate[10];
         int catchttl[10];
         cout << YELLOW << "Enter the ID of Role you want to delegate task TO : " << RESET;
+        cin.ignore();
         cin.getline(giveID, 5, '\n');
 
-        cout << BMAGENTA << "----------------------- CHOOSE THE TASK ID TO BE DELEGATED TO OTHER USER -----------------------\n"
+        cout << BMAGENTA << "\n----------------------- CHOOSE THE TASK ID TO BE DELEGATED TO OTHER USER -----------------------\n"
              << RESET;
         if (displayTask(takeID, "display"))
         {
@@ -750,11 +755,12 @@ public:
                 note.getline(users[i], 5, '|');
                 note.getline(assignee[i], 5, '|');
                 note >> priorities[i];
-                note.get(); // <— eat the '|' delimiter here
+                note.get(); 
                 note.getline(tid[i], 5, '|');
                 note.getline(status[i], 15, '|');
                 note >> catchcreate[i];
                 note >> catchttl[i];
+                note.get();//catch \n character
                 i++;
             }
             note.close();
