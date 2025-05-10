@@ -910,12 +910,12 @@ public:
             if (contains(line, "LOGIN FAILURE"))
             {
                 loginFailures++;
-                if (loginFailures == 3)
+                if (loginFailures <= 2)
                 {
                      time_t now = time(0);
                 fstream app;
                 app.open("anomaly.txt", ios::app);
-                 app << "[" << ctime(&now) << "]"  << "3 LOGIN FAILURES DETECTED" << endl;
+                 app << "[" << ctime(&now) << "]"  << "MULTIPLE LOGIN FAILURES DETECTED" << endl;
                 app.close();
                 }
             }
@@ -923,12 +923,12 @@ public:
             if (contains(line, "DENIED"))
             {
                 permissionDenials++;
-                if (permissionDenials == 3)
+                if (permissionDenials <= 2)
                 {
                 time_t now = time(0);
                 fstream app;
                 app.open("anomaly.txt", ios::app);
-                app << "[" << ctime(&now) << "]" << "3 PERMISSION DENIALS DETECTED" << endl;
+                app << "[" << ctime(&now) << "]" << "MULTIPLE PERMISSION DENIALS DETECTED" << endl;
                 app.close();
                 }
             }
