@@ -3,12 +3,13 @@
 #include "employee.h"
 void executivefunc(string ID)
 {
+    Employee* E = new HigherUp();
     bool running = true;
     Executive Ex(ID);
     while (running)
     {
 
-        Ex.showMenu(); // showing menu
+        E->showMenu(); // showing menu
         int facility;
         cin >> facility;
         system("clear");
@@ -103,4 +104,5 @@ void executivefunc(string ID)
             running = false;
         }
     }
+    delete E;
 }
